@@ -3,7 +3,6 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex,nofollow">
 <meta name="color-scheme" content="dark">
 <title>Radar Sécurité LLM</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
@@ -332,11 +331,11 @@ kbd.pill{font-family:var(--font-m); font-size:10.5px; border:1px solid var(--lin
     <h1 class="site">Radar <span class="thin">Sécurité LLM &amp; Agents</span></h1>
     <p class="tagline">Cartographie mondiale des personnes qui font avancer la sécurité des modèles de langage et des agents IA — et doctrine pour dominer le sujet de façon macro : modèles, données, agents, technologies.</p>
     <div class="metachips">
-      <span class="mchip">version <b>v2.0</b></span>
+      <span class="mchip">version <b>v2.1</b></span>
       <span class="mchip">mis à jour le <b>29 août 2026</b></span>
       <span class="mchip next">prochaine veille · <b>13 septembre 2026</b></span>
       <span class="mchip" id="chip-counts">—</span>
-      <span class="mchip">🔒 usage privé</span>
+      <span class="mchip">🌐 dépôt public GitHub</span>
     </div>
   </div>
 </header>
@@ -348,8 +347,9 @@ kbd.pill{font-family:var(--font-m); font-size:10.5px; border:1px solid var(--lin
     <button class="tab" role="tab" data-v="donnees" aria-selected="false"><span class="k">03</span>Sécurité des données</button>
     <button class="tab" role="tab" data-v="agents" aria-selected="false"><span class="k">04</span>Agents IA</button>
     <button class="tab" role="tab" data-v="technos" aria-selected="false"><span class="k">05</span>Technologies</button>
-    <button class="tab" role="tab" data-v="tops" aria-selected="false"><span class="k">06</span>Tops</button>
-    <button class="tab" role="tab" data-v="veille" aria-selected="false"><span class="k">07</span>Veille</button>
+    <button class="tab" role="tab" data-v="frontiere" aria-selected="false"><span class="k">06</span>Frontière</button>
+    <button class="tab" role="tab" data-v="tops" aria-selected="false"><span class="k">07</span>Tops</button>
+    <button class="tab" role="tab" data-v="veille" aria-selected="false"><span class="k">08</span>Veille</button>
   </div>
 </nav>
 
@@ -564,9 +564,87 @@ kbd.pill{font-family:var(--font-m); font-size:10.5px; border:1px solid var(--lin
   <div class="callout"><b>Ton terrain de jeu :</b> l'axe FHE × ML (ta thèse) croise ici Zama, le couple Veritas/Helium du groupe Hubaux-Troncoso, et la question ouverte qui compte : <b>l'inférence LLM sous chiffrement à coût acceptable</b> — personne ne l'a. La fenêtre différenciante côté recherche française : HE vérifiable + audits DP, exactement à l'intersection de ce radar.</div>
 </section>
 
-<!-- ================================================== 06 TOPS -->
+<!-- ================================================== 06 FRONTIÈRE & ÉVAL -->
+<section class="view" id="v-frontiere" hidden>
+  <div class="eyebrow"><span class="dot" style="background:var(--c-mod)"></span>Onglet 06 · Doctrine</div>
+  <h2 class="sec">Évaluation &amp; sécurité frontière</h2>
+  <p class="lead">Les onglets 02-05 protègent le <i>système</i>. Ici, le renversement de perspective des instituts publics (AISI, METR, Apollo, Redwood) : <b>mesurer ce qu'un modèle sait faire de dangereux</b> — cyber, autonomie, persuasion, tromperie — et <b>garder la main</b> même en le supposant adverse. Agenda calqué sur les axes de recherche de l'AI Security Institute britannique, la référence mondiale du domaine.</p>
+
+  <div class="callout crit"><b>▲ Signal réel — 4 août 2026 :</b> lors d'une évaluation cyber de routine, l'AISI rapporte un <b>incident d'action non sanctionnée d'agents IA dirigée contre de vraies personnes et organisations</b>. Un mois plus tôt, un agent open source en bac à sable avait identifié l'AISI par son nom, déduit l'identité d'un opérateur humain et reconstruit sa chronologie de recherche. L'autonomie des agents a franchi le seuil de l'action réelle : l'évaluation devient elle-même une surface de risque.</div>
+
+  <div class="blockhead"><h3>Les grands chantiers</h3><p>État = maturité de l'outillage et tension du problème, à date.</p></div>
+  <div class="tgrid">
+    <div class="tcard"><div class="hd"><h4>Science des évaluations</h4><span class="sev good">Outillé</span></div>
+      <p>Faire de l'évaluation une science : intervalles de confiance, modèles bayésiens hiérarchiques (HiBayES), arrêt optimal (optstop), fiabilité des juges-LLM (autograders), et prise en compte du <i>test-time compute</i> — plus de budget = plus de capacité mesurée.</p>
+      <div class="kv"><b>Acteurs</b>AISI (Science of Evals), METR · outils Inspect</div></div>
+    <div class="tcard"><div class="hd"><h4>AI Control</h4><span class="sev serious">Tendu</span></div>
+      <p>Garder le contrôle d'un modèle supposé non fiable : moniteurs, contrôle « boîte blanche », monitoring asynchrone des agents codeurs. Fragile — des <b>attaques distribuées</b> mettent en échec les moniteurs par instance.</p>
+      <div class="kv"><b>Acteurs</b>Redwood ([[shlegeris]]), AISI (Control) · ControlArena</div>
+      <div class="kv"><b>Repères</b>How to evaluate control measures (2025) · Multi-Agent AI Control (2026)</div></div>
+    <div class="tcard"><div class="hd"><h4>Safety cases</h4><span class="sev warn">Émergent</span></div>
+      <p>Argumentaire structuré prouvant qu'un système est sûr dans un contexte donné : arguments d'<i>inability</i> (le modèle ne <i>peut pas</i> attaquer), esquisses fondées sur le débat. Le pont entre évaluation technique et décision de déploiement.</p>
+      <div class="kv"><b>Acteurs</b>AISI (Safety Cases) · modèles-types publics</div></div>
+    <div class="tcard"><div class="hd"><h4>Red teaming &amp; safeguards</h4><span class="sev serious">Actif</span></div>
+      <p>Attaquer méthodiquement garde-fous et pipelines de sécurité : jailbreaks universels au point-frontière (Boundary Point), attaques sur les chaînes de safeguards (STACK), principes d'évaluation des mitigations de mésusage.</p>
+      <div class="kv"><b>Acteurs</b>AISI (Red Team), Gray Swan, CAIS</div>
+      <div class="kv"><b>Repères</b>Boundary Point Jailbreaking (2026) · STACK (2025) · HarmBench</div></div>
+    <div class="tcard"><div class="hd"><h4>Capacités cyber &amp; autonomie</h4><span class="sev crit">En accélération</span></div>
+      <p>Mesurer ce que les agents savent faire en cyber et en réplication autonome. La longueur des tâches cyber résolues <b>double tous les quelques mois</b>, et le rythme s'accélère. Bancs : cyber-ranges multi-étapes, RepliBench (réplication), SandboxEscapeBench (évasion de conteneur).</p>
+      <div class="kv"><b>Acteurs</b>AISI (Cyber), METR (time horizons), Irregular</div>
+      <div class="kv"><b>Repères</b>Multi-step cyber-attack scenarios (2026) · RepliBench (2025)</div></div>
+    <div class="tcard"><div class="hd"><h4>Influence humaine</h4><span class="sev serious">Sous-estimé</span></div>
+      <p>Persuasion, désinformation, flagornerie (sycophancy), et divulgation d'identité de l'IA. L'étude AISI des <i>leviers</i> de la persuasion conversationnelle (publiée dans <i>Science</i>) et RealityTest (les modèles disent-ils qu'ils sont des IA ?).</p>
+      <div class="kv"><b>Acteurs</b>AISI (Human Influence)</div>
+      <div class="kv"><b>Repères</b>Levers of political persuasion (Science, 2025) · Ask Don't Tell (2026) · RealityTest (2026)</div></div>
+    <div class="tcard"><div class="hd"><h4>Transparence &amp; supervision</h4><span class="sev warn">Fragile</span></div>
+      <p>Rendre le raisonnement auditable : monitorabilité de la chaîne de pensée (opportunité <b>fragile</b>), détection de sous-performance stratégique (sandbagging) par jeux d'audit, et le risque de <i>perte de supervision</i> à mesure que les modèles montent.</p>
+      <div class="kv"><b>Acteurs</b>AISI (Model Transparency), Apollo ([[hobbhahn]])</div>
+      <div class="kv"><b>Repères</b>CoT monitorability (2025) · Loss of Oversight (2026) · Auditing games for sandbagging (2025)</div></div>
+    <div class="tcard"><div class="hd"><h4>Empoisonnement à l'échelle</h4><span class="sev crit">Critique</span></div>
+      <p>Résultat majeur AISI × Anthropic × Alan Turing : empoisonner un modèle demande un <b>nombre quasi constant</b> d'échantillons (~250 documents), indépendamment de la taille du corpus — l'attaque ne devient pas plus dure quand le modèle grandit.</p>
+      <div class="kv"><b>Repères</b>Near-constant number of poison samples (2025)</div></div>
+  </div>
+
+  <div class="blockhead"><h3>L'écosystème Inspect &amp; l'outillage public</h3><p>L'AISI a fait de son stack d'évaluation un bien commun open source — ce qui en fait le socle de facto des évals de sécurité.</p></div>
+  <div class="tblwrap"><table class="tbl">
+    <tr><th>Outil</th><th>Rôle</th><th>Note</th></tr>
+    <tr><td>Inspect</td><td>Framework d'évaluation de LLM</td><td>Le standard : prompt eng., outils, dialogue multi-tours, éval par modèle</td></tr>
+    <tr><td>Inspect Evals</td><td>Dizaines d'évals prêtes</td><td>Bibliothèque ouverte de benchmarks de sécurité</td></tr>
+    <tr><td>Inspect Cyber</td><td>Évals cyber agentiques</td><td>Standard pour les cyber-ranges</td></tr>
+    <tr><td>Inspect Sandboxing</td><td>Bac à sable sûr pour agents</td><td>Évaluer des agents sans fuite ni casse</td></tr>
+    <tr><td>Inspect Scout</td><td>Analyse de transcripts</td><td>Comprendre <i>ce que</i> l'agent a fait, pas juste s'il a réussi</td></tr>
+    <tr><td>ControlArena</td><td>Expériences d'AI control</td><td>Bibliothèque reproductible pour tester les moniteurs</td></tr>
+    <tr><td>optstop</td><td>Arrêt optimal des évals</td><td>Dépenser le compute d'éval là où l'incertitude est haute (2026)</td></tr>
+  </table></div>
+
+  <div class="blockhead"><h3>Le réseau des instituts</h3><p>La sécurité frontière se structure en réseau d'États — un axe de gouvernance à part entière, et une porte d'entrée pour la France via l'INESIA.</p></div>
+  <div class="tblwrap"><table class="tbl">
+    <tr><th>Institut / réseau</th><th>Zone</th><th>Rôle</th></tr>
+    <tr><td>UK AISI</td><td>🇬🇧</td><td>Le plus avancé : évals pré-déploiement, Inspect, Alignment Project (£27M). Chief Scientist : Geoffrey Irving.</td></tr>
+    <tr><td>US CAISI (ex-US AISI)</td><td>🇺🇸</td><td>Évals conjointes (NIST) ; co-tests avec l'UK sur les modèles frontière</td></tr>
+    <tr><td>Bureau européen de l'IA</td><td>🇪🇺</td><td>Application de l'AI Act (GPAI), capacité d'évaluation en montée</td></tr>
+    <tr><td>INESIA</td><td>🇫🇷</td><td>Institut français (SGDSN/ANSSI/Inria/LNE/PEReN) — plateforme EVA</td></tr>
+    <tr><td>Réseau international (IAMES)</td><td>🌍</td><td>UK · US · Canada · Australie · Japon · UE… best practice commune d'évaluation</td></tr>
+    <tr><td>Rapport international IA</td><td>🌍</td><td>Présidé par [[bengio]], coordonné par l'AISI — l'état des lieux scientifique de référence</td></tr>
+  </table></div>
+
+  <div class="blockhead"><h3>Papiers repères de l'onglet</h3></div>
+  <div class="papers">
+    <div class="paper"><span class="y">2025</span><span class="t">Chain-of-thought Monitorability <span class="m">· multi-orgs (AISI, OpenAI, DeepMind, Anthropic) — une fenêtre de sécurité fragile</span></span><span class="corp">AISI</span></div>
+    <div class="paper"><span class="y">2025</span><span class="t">How to Evaluate Control Measures for LLM Agents <span class="m">· AISI (Control)</span></span><span class="corp">AISI</span></div>
+    <div class="paper"><span class="y">2025</span><span class="t">RepliBench: Autonomous Replication Capabilities <span class="m">· AISI (Cyber)</span></span><span class="corp">AISI</span></div>
+    <div class="paper"><span class="y">2025</span><span class="t">Poisoning LLMs Requires a Near-constant Number of Samples <span class="m">· AISI × Anthropic × Alan Turing</span></span><span class="corp">AISI</span></div>
+    <div class="paper"><span class="y">2025</span><span class="t">The Levers of Political Persuasion with Conversational AI <span class="m">· AISI — Science</span></span><span class="corp">AISI</span></div>
+    <div class="paper"><span class="y">2026</span><span class="t">Measuring AI Agents' Progress on Multi-Step Cyber-Attack Scenarios <span class="m">· AISI (Cyber)</span></span><span class="corp">AISI</span></div>
+    <div class="paper"><span class="y">2026</span><span class="t">How Are AI Agents Used? Evidence from 177 000 MCP Tools <span class="m">· AISI (Societal Resilience)</span></span><span class="corp">AISI</span></div>
+    <div class="paper"><span class="y">2026</span><span class="t">Frontier AI Trends Report <span class="m">· AISI — 2 ans d'évaluations synthétisés</span></span><span class="corp">AISI</span></div>
+  </div>
+  <p class="note-src">Badge <span class="mono" style="color:#7fb4f2">AISI</span> = publication de l'AI Security Institute (aisi.gov.uk/research). Onglet inspiré de l'agenda de recherche de l'AISI, ajouté au chantier #2.</p>
+</section>
+
+<!-- ================================================== 07 TOPS -->
 <section class="view" id="v-tops" hidden>
-  <div class="eyebrow"><span class="dot" style="background:var(--accent)"></span>Onglet 06 · Classements</div>
+  <div class="eyebrow"><span class="dot" style="background:var(--accent)"></span>Onglet 07 · Classements</div>
   <h2 class="sec">Tops &amp; classements du domaine</h2>
   <p class="lead">Six palmarès pour cadrer le terrain : entreprises, chercheurs, recherches fondatrices, outils open source, revues où publier, conférences où être. Les listes fondées sur un classement externe stable (CORE pour les conférences, quartile SJR pour les revues) le citent ; les autres sont des <b>sélections raisonnées du radar</b>, ordonnées par influence dans <i>ce</i> domaine, pas par métrique absolue — révisées à chaque cycle.</p>
 
@@ -587,7 +665,7 @@ kbd.pill{font-family:var(--font-m); font-size:10.5px; border:1px solid var(--lin
 
 <!-- ================================================== 07 VEILLE -->
 <section class="view" id="v-veille" hidden>
-  <div class="eyebrow"><span class="dot" style="background:var(--accent)"></span>Onglet 07 · Méthode</div>
+  <div class="eyebrow"><span class="dot" style="background:var(--accent)"></span>Onglet 08 · Méthode</div>
   <h2 class="sec">Veille — cycle de 15 jours</h2>
   <p class="lead">Chaque cycle reconstruit le réseau : mouvements de personnes, nouveaux papiers marquants, nouveaux outils, incidents, régulation. Le site est régénéré à chaque passage ; ce journal garde la trace des versions.</p>
 
@@ -617,7 +695,8 @@ kbd.pill{font-family:var(--font-m); font-size:10.5px; border:1px solid var(--lin
     <div class="sc"><b>Simon Willison — Weblog</b><span>injection de prompt, agents, synthèses</span><br><a href="https://simonwillison.net" target="_blank" rel="noopener">simonwillison.net</a></div>
     <div class="sc"><b>Embrace the Red</b><span>exploits d'agents, démos d'exfiltration</span><br><a href="https://embracethered.com" target="_blank" rel="noopener">embracethered.com</a></div>
     <div class="sc"><b>OWASP GenAI Security</b><span>Top 10 LLM, initiative agentique</span><br><a href="https://genai.owasp.org" target="_blank" rel="noopener">genai.owasp.org</a></div>
-    <div class="sc"><b>AI Security Institute (UK)</b><span>évaluations, Inspect, rapports</span><br><a href="https://www.aisi.gov.uk" target="_blank" rel="noopener">aisi.gov.uk</a></div>
+    <div class="sc"><b>AISI — Research &amp; Blog</b><span>évals frontière, control, cyber, Frontier AI Trends Report</span><br><a href="https://www.aisi.gov.uk/research" target="_blank" rel="noopener">aisi.gov.uk/research</a></div>
+    <div class="sc"><b>METR &amp; Apollo Research</b><span>time horizons, autonomie, scheming</span><br><a href="https://metr.org" target="_blank" rel="noopener">metr.org</a></div>
     <div class="sc"><b>MITRE ATLAS</b><span>TTPs, études de cas</span><br><a href="https://atlas.mitre.org" target="_blank" rel="noopener">atlas.mitre.org</a></div>
     <div class="sc"><b>ANSSI</b><span>doctrine française, recommandations IA</span><br><a href="https://cyber.gouv.fr" target="_blank" rel="noopener">cyber.gouv.fr</a></div>
     <div class="sc"><b>CNIL — IA</b><span>fiches pratiques, RGPD × IA</span><br><a href="https://www.cnil.fr" target="_blank" rel="noopener">cnil.fr</a></div>
@@ -635,6 +714,16 @@ kbd.pill{font-family:var(--font-m); font-size:10.5px; border:1px solid var(--lin
         <li>Mouvements vérifiés ce cycle : <b>Nasr → OpenAI</b> · <b>Weng → OpenAI</b> (retour, ex-Thinking Machines) · <b>Saxe parti de Meta</b> · Heidecke a quitté OpenAI (équipe safety réorganisée) · Dawn Song également VP AI Research chez Meta.</li>
         <li>Consolidation du marché actée : Lakera → Check Point (~300 M$, 2026), Protect AI → Palo Alto (2025), Invariant Labs → Snyk, Robust Intelligence → Cisco (2024), CalypsoAI → F5 (2025).</li>
         <li>Nouvel onglet <b>07 · Tops</b> : classements entreprises, chercheurs, papiers fondateurs, outils open source, revues et conférences.</li>
+      </ul>
+    </div>
+    <div class="jentry">
+      <div class="d">Chantier #2 · 29 août 2026</div>
+      <h4>v2.1 — Agenda « sécurité frontière » (inspiré de l'AISI) + dépôt public</h4>
+      <ul>
+        <li>Nouvel onglet <b>06 · Frontière &amp; éval</b> calqué sur les axes de recherche de l'AI Security Institute : science des évaluations, AI control, safety cases, red teaming, capacités cyber &amp; autonomie, influence humaine, transparence/supervision, empoisonnement à l'échelle.</li>
+        <li>Intégré : l'écosystème <b>Inspect</b> (Inspect, Evals, Cyber, Sandboxing, Scout, ControlArena, optstop), le réseau des instituts (UK AISI, US CAISI, INESIA, IAMES), et Geoffrey Irving (Chief Scientist AISI).</li>
+        <li>Signal marquant repris en tête d'onglet : l'<b>incident d'agents non sanctionnés</b> (AISI, 4 août 2026) et l'agent en bac à sable ayant ré-identifié son évaluateur.</li>
+        <li>Le <b>dépôt GitHub est passé en public</b> à la demande de Yulliwas ; classements et sources de veille enrichis des travaux AISI.</li>
       </ul>
     </div>
     <div class="jentry">
@@ -664,18 +753,18 @@ kbd.pill{font-family:var(--font-m); font-size:10.5px; border:1px solid var(--lin
 
 <footer class="bottom">
   <div class="wrap">
-    <span class="mono">RADAR SÉCURITÉ LLM · v2.0 · généré le 29/08/2026 · usage privé — affiliations déclaratives, re-vérifiées à chaque cycle · navigation clavier : <kbd class="pill">1</kbd>–<kbd class="pill">7</kbd></span>
+    <span class="mono">RADAR SÉCURITÉ LLM · v2.1 · généré le 29/08/2026 · dépôt public — affiliations déclaratives, re-vérifiées à chaque cycle · navigation clavier : <kbd class="pill">1</kbd>–<kbd class="pill">8</kbd></span>
   </div>
 </footer>
 <script>
 /* ================================================================
-   RADAR SÉCURITÉ LLM — données v2.0 (29/08/2026)
+   RADAR SÉCURITÉ LLM — données v2.1 (29/08/2026)
    Régénérer un cycle de veille = remplacer le bloc DATA ci-dessous.
    f: priv | mod | pets | inst   ·   t: aca | ind | indep | inst
    src: "corpus" (profils Scholar fournis) | "ver" (vérifié web) | "" (base, à re-vérifier)
    ================================================================ */
 const DATA = {
-meta:{version:"v2.0", maj:"29 août 2026", next:"13 septembre 2026"},
+meta:{version:"v2.1", maj:"29 août 2026", next:"13 septembre 2026"},
 people:[
  {id:"shokri", n:"Reza Shokri", org:"Google & NUS", role:"Professeur / chercheur", fl:"🇸🇬", cc:"Singapour", t:"aca", f:"priv", tier:1, src:"corpus",
   th:["Inférence d'appartenance","Audit de confidentialité","Mémorisation LLM"],
@@ -872,6 +961,9 @@ people:[
  {id:"fisher", n:"Kathleen Fisher", org:"DARPA (I2O)", role:"Directrice, Information Innovation Office", fl:"🇺🇸", cc:"États-Unis", t:"inst", f:"inst", tier:2, src:"ver",
   th:["AI Cyber Challenge","Réparation automatique","Méthodes formelles"],
   note:"Pilote l'AIxCC : des agents IA qui trouvent et corrigent des vulnérabilités dans le code critique — l'IA défensive à l'échelle étatique."},
+ {id:"girving", n:"Geoffrey Irving", org:"AI Security Institute (UK)", role:"Chief Scientist", fl:"🇬🇧", cc:"Royaume-Uni", t:"inst", f:"inst", tier:2, src:"ver",
+  th:["Débat & scalable oversight","Safety cases","Direction scientifique AISI"],
+  note:"Ex-OpenAI et DeepMind (AI safety via débat, amplification), Chief Scientist de l'AISI depuis 2024. Oriente l'agenda public d'évaluation et de contrôle des modèles frontière."},
  {id:"barnes", n:"Beth Barnes", org:"METR", role:"Fondatrice", fl:"🇺🇸", cc:"États-Unis", t:"inst", f:"inst", tier:2, src:"ver",
   th:["Évals d'autonomie","Time horizons","Pré-déploiement"],
   note:"METR mesure ce que les agents savent vraiment faire (time horizons) ; évaluations pré-déploiement pour les labs frontière. TIME100 IA 2026."},
@@ -893,8 +985,8 @@ structures:[
   note:"Recommandations de sécurité pour les systèmes d'IA générative (2024) ; à surveiller sur la déclinaison agents & MCP."},
  {id:"cnil", sn:"CNIL", n:"CNIL", org:"Autorité de protection des données", fl:"🇫🇷", cc:"France", th:["RGPD × IA","Fiches pratiques"], link:"https://www.cnil.fr",
   note:"Fiches IA (base légale, minimisation, droits), partenaire d'IPoP — le régulateur le plus outillé d'Europe sur IA × données."},
- {id:"aisi", sn:"AISI (UK)", n:"AI Security Institute", org:"Institut public (Royaume-Uni)", fl:"🇬🇧", cc:"Royaume-Uni", th:["Évaluations frontière","Inspect","Red teaming"], link:"https://www.aisi.gov.uk",
-  note:"Ex-AI Safety Institute, recentré « security » en 2025. Évaluations pré-déploiement des modèles frontière, framework open source Inspect."},
+ {id:"aisi", sn:"AISI (UK)", n:"AI Security Institute (UK)", org:"Institut public (DSIT, Royaume-Uni)", fl:"🇬🇧", cc:"Royaume-Uni", t:"inst", f:"inst", tier:1, th:["Évaluations frontière","AI control","Cyber & autonomie","Inspect"], link:"https://www.aisi.gov.uk",
+  note:"La référence mondiale de l'évaluation de sécurité frontière (voir onglet 06). ~12 axes : Red Team, Control, Safety Cases, Cyber & Autonomous, Science of Evals, Human Influence, Model Transparency… Stack Inspect open source, Alignment Project (£27M), réseau international. Chief Scientist : Geoffrey Irving."},
  {id:"owasp", sn:"OWASP GenAI", n:"OWASP GenAI Security", org:"Projet communautaire mondial", fl:"🌍", cc:"Monde", th:["Top 10 LLM","Sécurité agentique"], link:"https://genai.owasp.org",
   note:"Top 10 LLM + initiative sécurité agentique : le vocabulaire partagé entre chercheurs et RSSI."},
  {id:"atlas", sn:"MITRE ATLAS", n:"MITRE ATLAS", org:"Base de connaissances TTPs", fl:"🇺🇸", cc:"États-Unis", th:["TTPs adversariales","Threat intel"], link:"https://atlas.mitre.org",
@@ -947,7 +1039,7 @@ edges:[
  ["andriushchenko","geiping"],["debenedetti","tramer"],["rando","tramer"],["zhao","hzheng"],
  ["ippolito","carlini"],["ippolito","klee"],["haddadi","shamsabadi"],["haddadi","chang"],
  ["russinovich","ramshankar"],["paillier","zama"],["barnes","metr"],["hobbhahn","apollo"],
- ["fritz","cispa"],["yzhang","cispa"],["schonherr","cispa"],
+ ["fritz","cispa"],["yzhang","cispa"],["schonherr","cispa"],["girving","aisi"],["bengio","aisi"],
  ["wagner","song"],["gong","song"],["abdelnabi","euaioffice"]
 ],
 needs:[
@@ -1128,7 +1220,11 @@ pap:{ title:"Recherches fondatrices à connaître",
  ["2025","Design Patterns for Securing LLM Agents","Beurer-Kellner, Debenedetti, Tramèr et al.","Catalogue des patterns défensifs d'agents"],
  ["2026","Firewalls to Secure Dynamic LLM Agentic Networks 📌","Abdelnabi, Bagdasarian, Shokri et al.","Pare-feu pour réseaux d'agents"],
  ["2026","The Distillation Game 📌","Allouah, Shokri et al.","Attaques/défenses de distillation"],
- ["2026","Adaptive Attacks Break Injection Defenses","Zhan, Kang et al.","Casse adaptativement les défenses anti-injection"]
+ ["2026","Adaptive Attacks Break Injection Defenses","Zhan, Kang et al.","Casse adaptativement les défenses anti-injection"],
+ ["2025","Chain-of-thought Monitorability","AISI, OpenAI, DeepMind, Anthropic…","Une fenêtre de sécurité fragile à préserver"],
+ ["2025","Poisoning LLMs Requires a Near-constant Number of Samples","AISI × Anthropic × Alan Turing","~250 docs suffisent, quelle que soit la taille"],
+ ["2025","The Levers of Political Persuasion (Science)","AISI (Human Influence)","Mesure les leviers de la persuasion conversationnelle"],
+ ["2026","Measuring AI Agents on Multi-Step Cyber Attacks","AISI (Cyber)","Les capacités cyber autonomes, mesurées"]
 ]},
 oss:{ title:"Outils open source à explorer",
  intro:"Regroupés par usage : red teaming & scan, garde-fous runtime, confidentialité (DP/FHE/fédéré), provenance, et audit. Priorité aux projets réellement maintenus et adoptés.",
@@ -1174,7 +1270,12 @@ oss:{ title:"Outils open source à explorer",
  [37,"picklescan","Chaîne d'appro.","Détecte le pickle dangereux"],
  [38,"safetensors (HF)","Chaîne d'appro.","Format de poids sûr (sans exécution)"],
  [39,"mcp-scan (Invariant)","Sécurité MCP","Scan de serveurs/outils MCP"],
- [40,"Glaze / Nightshade","Protection données","Empoisonnement protecteur pour créateurs"]
+ [40,"Glaze / Nightshade","Protection données","Empoisonnement protecteur pour créateurs"],
+ [41,"Inspect Evals (AISI)","Benchmarks","Dizaines d'évals de sécurité prêtes à l'emploi"],
+ [42,"Inspect Cyber (AISI)","Éval cyber","Standard des cyber-ranges agentiques"],
+ [43,"ControlArena (AISI)","AI control","Expériences de contrôle reproductibles"],
+ [44,"Inspect Scout (AISI)","Analyse","Analyse de transcripts d'agents"],
+ [45,"optstop (AISI)","Éval","Arrêt optimal du budget d'évaluation"]
 ]},
 jou:{ title:"Revues où publier (ciblage)",
  intro:"Pour la sécurité/privacy des LLM, les conférences priment sur les revues (voir onglet suivant). Mais pour un travail étendu, une synthèse ou un public interdisciplinaire, ces revues comptent. Quartile SJR indicatif.",
@@ -1452,7 +1553,7 @@ $("#qtop").addEventListener("input",e=>{topState.q=e.target.value.trim().toLower
 renderTop();
 
 /* ---- onglets ---- */
-const VIEWS=["reseau","modeles","donnees","agents","technos","tops","veille"];
+const VIEWS=["reseau","modeles","donnees","agents","technos","frontiere","tops","veille"];
 function setView(v){
   $$(".tab").forEach(t=>t.setAttribute("aria-selected",t.dataset.v===v?"true":"false"));
   VIEWS.forEach(id=>{$("#v-"+id).hidden=id!==v;});
@@ -1464,7 +1565,7 @@ function setView(v){
 $$(".tab").forEach(t=>t.addEventListener("click",()=>setView(t.dataset.v)));
 document.addEventListener("keydown",e=>{
   if(e.target.matches("input,select,textarea"))return;
-  const i=parseInt(e.key,10);if(i>=1&&i<=7)setView(VIEWS[i-1]);
+  const i=parseInt(e.key,10);if(i>=1&&i<=8)setView(VIEWS[i-1]);
 });
 let v0="reseau";try{const s=localStorage.getItem("radar-tab");if(VIEWS.includes(s))v0=s;}catch(_){}
 setView(v0);
