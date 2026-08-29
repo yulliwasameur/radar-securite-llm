@@ -331,7 +331,7 @@ kbd.pill{font-family:var(--font-m); font-size:10.5px; border:1px solid var(--lin
     <h1 class="site">Radar <span class="thin">Sécurité LLM &amp; Agents</span></h1>
     <p class="tagline">Cartographie mondiale des personnes qui font avancer la sécurité des modèles de langage et des agents IA — et doctrine pour dominer le sujet de façon macro : modèles, données, agents, technologies.</p>
     <div class="metachips">
-      <span class="mchip">version <b>v2.1</b></span>
+      <span class="mchip">version <b>v2.2</b></span>
       <span class="mchip">mis à jour le <b>29 août 2026</b></span>
       <span class="mchip next">prochaine veille · <b>13 septembre 2026</b></span>
       <span class="mchip" id="chip-counts">—</span>
@@ -517,7 +517,7 @@ kbd.pill{font-family:var(--font-m); font-size:10.5px; border:1px solid var(--lin
     <tr><td>Outils / MCP</td><td>Outil empoisonné, rug pull, RCE</td><td>Descriptions d'outils piégées, serveurs MCP malveillants</td><td>Allowlist, signature, sandbox, revue des manifestes</td></tr>
     <tr><td>Mémoire</td><td>Empoisonnement persistant</td><td>Démos d'implants mémoire (Rehberger, 2024-2025)</td><td>Provenance des souvenirs, TTL, revue humaine</td></tr>
     <tr><td>Action</td><td>Excès d'autonomie, exfiltration</td><td>Exfiltration via rendu d'images markdown</td><td>Moindre privilège, human-in-the-loop, egress control</td></tr>
-    <tr><td>Multi-agents</td><td>Propagation entre agents</td><td>Firewalls to Secure Dynamic LLM Agentic Networks (TMLR 2026) 📌</td><td>Pare-feu inter-agents, contrats de tâche</td></tr>
+    <tr><td>Multi-agents</td><td>Propagation entre agents ; attaques sur les protocoles A2A / MCP</td><td>Firewalls to Secure Dynamic LLM Agentic Networks (TMLR 2026) 📌</td><td>Pare-feu inter-agents, contrats de tâche, sécurité des protocoles</td></tr>
   </table></div>
 
   <div class="blockhead"><h3>Patterns défensifs qui comptent</h3></div>
@@ -704,6 +704,17 @@ kbd.pill{font-family:var(--font-m); font-size:10.5px; border:1px solid var(--lin
     <div class="sc"><b>Conférences noyau</b><span>IEEE S&amp;P · USENIX Sec · CCS · NDSS · SaTML · PETS + ICML/NeurIPS/ICLR</span></div>
   </div>
 
+  <div class="blockhead"><h3>Agenda — la saison sécurité IA (automne 2026)</h3><p>Les rendez-vous datés à ne pas manquer. Le classement complet des lieux est dans l'onglet 07.</p></div>
+  <div class="tblwrap"><table class="tbl">
+    <tr><th>Date</th><th>Événement</th><th>Lieu</th><th>Focus</th></tr>
+    <tr><td class="mono">28-30 oct</td><td>GAISS — IEEE Generative AI for Secure Systems</td><td>Austin, TX 🇺🇸</td><td>GenAI × sécurité (10 tracks)</td></tr>
+    <tr><td class="mono">4-6 nov</td><td>IEEE TPS-ISA (8ᵉ éd.)</td><td>San Jose, CA 🇺🇸</td><td>Trust, privacy &amp; sécurité des systèmes intelligents</td></tr>
+    <tr><td class="mono">15 nov</td><td>AISec (19ᵉ workshop ACM)</td><td>La Haye 🇳🇱</td><td>Sécurité &amp; privacy du ML/LLM · chairs Abdelnabi, Jagielski, Apruzzese</td></tr>
+    <tr><td class="mono">15 nov</td><td>AGENT-SEC (workshop CCS)</td><td>La Haye 🇳🇱</td><td>Sécurité/privacy/safety des agents · invités Fritz, Bagdasarian</td></tr>
+    <tr><td class="mono">15-19 nov</td><td>ACM CCS 2026 (conférence hôte)</td><td>La Haye 🇳🇱</td><td>LE grand rendez-vous sécurité + ses workshops IA</td></tr>
+  </table></div>
+  <p class="note-src">Dates issues des appels à contributions 2026 (aisec.cc, agent-sec, tps.ieee-cs.org, gaiss.info). SECAI (ESORICS), NeurIPS, IEEE S&amp;P, USENIX Security et PETS figurent dans le classement des conférences (onglet 07).</p>
+
   <div class="blockhead"><h3>Journal des cycles</h3></div>
   <div class="jrnl">
     <div class="jentry">
@@ -714,6 +725,16 @@ kbd.pill{font-family:var(--font-m); font-size:10.5px; border:1px solid var(--lin
         <li>Mouvements vérifiés ce cycle : <b>Nasr → OpenAI</b> · <b>Weng → OpenAI</b> (retour, ex-Thinking Machines) · <b>Saxe parti de Meta</b> · Heidecke a quitté OpenAI (équipe safety réorganisée) · Dawn Song également VP AI Research chez Meta.</li>
         <li>Consolidation du marché actée : Lakera → Check Point (~300 M$, 2026), Protect AI → Palo Alto (2025), Invariant Labs → Snyk, Robust Intelligence → Cisco (2024), CalypsoAI → F5 (2025).</li>
         <li>Nouvel onglet <b>07 · Tops</b> : classements entreprises, chercheurs, papiers fondateurs, outils open source, revues et conférences.</li>
+      </ul>
+    </div>
+    <div class="jentry">
+      <div class="d">Chantier #3 · 29 août 2026</div>
+      <h4>v2.2 — Écosystème conférences 2026 &amp; nouveaux entrants</h4>
+      <ul>
+        <li>Nouvel <b>agenda daté</b> (onglet 08) : GAISS (Austin, 28-30 oct), IEEE TPS-ISA (San Jose, 4-6 nov), AISec &amp; AGENT-SEC (La Haye, 15 nov, avec CCS).</li>
+        <li>Classement des conférences (onglet 07) étendu : AGENT-SEC, IEEE TPS-ISA, SECAI, GAISS ; AISec enrichi de son édition 2026.</li>
+        <li>5 nouveaux profils issus des comités : <b>Matthew Jagielski</b> (Anthropic, chair AISec), <b>Konrad Rieck</b> (BIFOLD), <b>Lorenzo Cavallaro</b> (UCL), <b>Giovanni Apruzzese</b> (Liechtenstein), <b>Maura Pintor</b> (Cagliari). Debenedetti repositionné Meta &amp; ETH.</li>
+        <li>Onglet Agents : ajout des attaques sur les protocoles inter-agents (A2A / MCP).</li>
       </ul>
     </div>
     <div class="jentry">
@@ -753,18 +774,18 @@ kbd.pill{font-family:var(--font-m); font-size:10.5px; border:1px solid var(--lin
 
 <footer class="bottom">
   <div class="wrap">
-    <span class="mono">RADAR SÉCURITÉ LLM · v2.1 · généré le 29/08/2026 · dépôt public — affiliations déclaratives, re-vérifiées à chaque cycle · navigation clavier : <kbd class="pill">1</kbd>–<kbd class="pill">8</kbd></span>
+    <span class="mono">RADAR SÉCURITÉ LLM · v2.2 · généré le 29/08/2026 · dépôt public — affiliations déclaratives, re-vérifiées à chaque cycle · navigation clavier : <kbd class="pill">1</kbd>–<kbd class="pill">8</kbd></span>
   </div>
 </footer>
 <script>
 /* ================================================================
-   RADAR SÉCURITÉ LLM — données v2.1 (29/08/2026)
+   RADAR SÉCURITÉ LLM — données v2.2 (29/08/2026)
    Régénérer un cycle de veille = remplacer le bloc DATA ci-dessous.
    f: priv | mod | pets | inst   ·   t: aca | ind | indep | inst
    src: "corpus" (profils Scholar fournis) | "ver" (vérifié web) | "" (base, à re-vérifier)
    ================================================================ */
 const DATA = {
-meta:{version:"v2.1", maj:"29 août 2026", next:"13 septembre 2026"},
+meta:{version:"v2.2", maj:"29 août 2026", next:"13 septembre 2026"},
 people:[
  {id:"shokri", n:"Reza Shokri", org:"Google & NUS", role:"Professeur / chercheur", fl:"🇸🇬", cc:"Singapour", t:"aca", f:"priv", tier:1, src:"corpus",
   th:["Inférence d'appartenance","Audit de confidentialité","Mémorisation LLM"],
@@ -940,7 +961,7 @@ people:[
  {id:"schonherr", n:"Lea Schönherr", org:"CISPA", role:"Faculty", fl:"🇩🇪", cc:"Allemagne", t:"aca", f:"mod", tier:2, src:"",
   th:["Adversarial audio","Deepfakes","Injection"],
   note:"Sécurité des systèmes génératifs multimodaux — de l'adversarial audio aux injections dans le code généré."},
- {id:"debenedetti", n:"Edoardo Debenedetti", org:"ETH Zürich", role:"Doctorant · chercheur", fl:"🇨🇭", cc:"Suisse", t:"aca", f:"mod", tier:2, src:"ver",
+ {id:"debenedetti", n:"Edoardo Debenedetti", org:"Meta & ETH Zürich", role:"Chercheur · doctorant", fl:"🇨🇭", cc:"Suisse", t:"aca", f:"mod", tier:2, src:"ver",
   th:["AgentDojo","CaMeL","Design patterns anti-injection"],
   note:"Le fil rouge des défenses d'agents : AgentDojo, CaMeL, design patterns anti-injection (avec Tramèr et DeepMind)."},
  {id:"rando", n:"Javier Rando", org:"ETH Zürich & Anthropic", role:"Doctorant · MTS", fl:"🇨🇭", cc:"Suisse", t:"aca", f:"mod", tier:2, src:"ver",
@@ -972,7 +993,22 @@ people:[
   note:"Apollo traque la tromperie stratégique des modèles (scheming, sandbagging) — l'angle le plus dérangeant des évals."},
  {id:"shlegeris", n:"Buck Shlegeris", org:"Redwood Research", role:"CEO", fl:"🇺🇸", cc:"États-Unis", t:"inst", f:"inst", tier:2, src:"ver",
   th:["AI control","Sabotage evals","Monitoring"],
-  note:"L'agenda « AI control » : garder la main sur un modèle qu'on suppose adverse — la sécurité pensée comme lutte contre un initié."}
+  note:"L'agenda « AI control » : garder la main sur un modèle qu'on suppose adverse — la sécurité pensée comme lutte contre un initié."},
+ {id:"jagielski", n:"Matthew Jagielski", org:"Anthropic", role:"Chercheur", fl:"🇺🇸", cc:"États-Unis", t:"ind", f:"mod", tier:2, src:"ver",
+  th:["Empoisonnement","Privacy du ML","Audit"],
+  note:"Co-auteur de Truth Serum et de références sur l'empoisonnement et l'extraction (avec Carlini, Tramèr, Shokri). Co-chair d'AISec 2026 — l'un des ponts entre l'atelier de référence et l'industrie (Anthropic)."},
+ {id:"rieck", n:"Konrad Rieck", org:"BIFOLD & TU Berlin", role:"Professeur", fl:"🇩🇪", cc:"Allemagne", t:"aca", f:"mod", tier:2, src:"ver",
+  th:["Adversarial ML","Malware & ML","Méthodologie"],
+  note:"Figure de la sécurité par apprentissage (détection de malware, analyse) et de la rigueur méthodologique : co-auteur des « Dos and Don'ts of ML in Computer Security » (USENIX 2022)."},
+ {id:"cavallaro", n:"Lorenzo Cavallaro", org:"University College London", role:"Professeur", fl:"🇬🇧", cc:"Royaume-Uni", t:"aca", f:"mod", tier:2, src:"ver",
+  th:["ML × sécurité systèmes","Malware","Concept drift"],
+  note:"Dirige le groupe systems-security de l'UCL ; TESSERACT et l'évaluation réaliste du ML pour la détection de malware (dérive temporelle), co-auteur des « Dos and Don'ts »."},
+ {id:"apruzzese", n:"Giovanni Apruzzese", org:"Univ. du Liechtenstein", role:"Professeur assistant", fl:"🇱🇮", cc:"Liechtenstein", t:"aca", f:"mod", tier:2, src:"ver",
+  th:["Éval critique du ML en sécurité","Adversarial","Économie"],
+  note:"Voix critique sur l'écart entre recherche et pratique du ML en cybersécurité (« Real Attackers Don't Compute Gradients ») ; co-chair d'AISec 2026."},
+ {id:"pintor", n:"Maura Pintor", org:"Univ. de Cagliari", role:"Professeure assistante", fl:"🇮🇹", cc:"Italie", t:"aca", f:"mod", tier:2, src:"ver",
+  th:["Évaluation de robustesse","Attaques adaptatives","Debugging"],
+  note:"Outils et bonnes pratiques d'évaluation de la robustesse adversariale (indicators of attack failure, avec Biggio) — le versant « bien mesurer l'attaque » de l'école de Cagliari."}
 ],
 structures:[
  {id:"ipop", sn:"IPoP", n:"IPoP — PEPR Cybersécurité", org:"Projet national interdisciplinaire (Inria, CNRS, universités, CNIL)", fl:"🇫🇷", cc:"France", th:["Privacy","IA privée","Anonymisation","Conformité"], link:"https://files.inria.fr/ipop",
@@ -1040,7 +1076,9 @@ edges:[
  ["ippolito","carlini"],["ippolito","klee"],["haddadi","shamsabadi"],["haddadi","chang"],
  ["russinovich","ramshankar"],["paillier","zama"],["barnes","metr"],["hobbhahn","apollo"],
  ["fritz","cispa"],["yzhang","cispa"],["schonherr","cispa"],["girving","aisi"],["bengio","aisi"],
- ["wagner","song"],["gong","song"],["abdelnabi","euaioffice"]
+ ["wagner","song"],["gong","song"],["abdelnabi","euaioffice"],
+ ["jagielski","carlini"],["jagielski","tramer"],["jagielski","shokri"],["jagielski","abdelnabi"],
+ ["rieck","cavallaro"],["pintor","biggio"],["apruzzese","pintor"],["apruzzese","biggio"]
 ],
 needs:[
  {id:"train", label:"Entraîner ou affiner un modèle sans exposer les données individuelles",
@@ -1332,7 +1370,7 @@ conf:{ title:"Conférences dans le monde — avec classement",
  [22,"PETS / PoPETs","A","Privacy","★★★ le rendez-vous PETs"],
  [23,"WPES (workshop CCS)","WS","Privacy","★★ privacy dans la société électronique 📌"],
  [24,"SaTML (IEEE)","WS","Sécurité ML","★★★ dédié sécurité & fiabilité du ML"],
- [25,"AISec (workshop CCS)","WS","Sécurité ML","★★★ l'atelier historique sécurité×IA"],
+ [25,"AISec (workshop CCS)","WS","Sécurité ML","★★★ l'atelier historique sécurité×IA · 2026 : 15 nov, La Haye (chairs Abdelnabi/Jagielski/Apruzzese)"],
  [26,"DLS (Deep Learning & Security, S&P)","WS","Sécurité ML","★★ atelier attaques/défenses"],
  [27,"SafeGenAI / red teaming (NeurIPS)","WS","Safety","★★★ ateliers safety à fort trafic"],
  [28,"ICLR Secure & Trustworthy LLMs","WS","Safety LLM","★★★ dédié LLM de confiance"],
@@ -1341,7 +1379,11 @@ conf:{ title:"Conférences dans le monde — avec classement",
  [31,"Real World Crypto","—","Crypto","★★ crypto appliquée (FHE, MPC)"],
  [32,"CRYPTO / EUROCRYPT","A*","Crypto","★★ fondations FHE/MPC/ZK"],
  [33,"DEF CON AI Village","—","Communauté","★★★ red teaming public à grande échelle"],
- [34,"Black Hat / RSA","—","Industrie","★★ où la sécurité LLM rencontre les RSSI"]
+ [34,"Black Hat / RSA","—","Industrie","★★ où la sécurité LLM rencontre les RSSI"],
+ [35,"AGENT-SEC (workshop CCS)","WS","Sécurité agents","★★★ dédié sécurité/privacy/safety des systèmes agentiques · 2026 : 15 nov, La Haye"],
+ [36,"IEEE TPS-ISA","—","Trust & privacy","★★ trust/privacy/sécurité des systèmes intelligents · 2026 : 4-6 nov, San Jose"],
+ [37,"SECAI (workshop ESORICS)","WS","IA × cyber","★★ intersection IA/cybersécurité, actes LNCS Springer"],
+ [38,"GAISS (IEEE)","—","GenAI × sécurité","★ IEEE Generative AI for Secure Systems · 2026 : 28-30 oct, Austin"]
 ]}
 };
 /* ================= moteur ================= */
