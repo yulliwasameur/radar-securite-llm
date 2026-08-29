@@ -1,0 +1,1481 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="color-scheme" content="dark">
+<title>Radar Sécurité LLM</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* ============ Radar Sécurité LLM — thème unique « salle de veille », peint explicitement ============ */
+:root{
+  color-scheme: dark;
+  --bg0:#0e1116;          /* plan de page */
+  --bg1:#151a21;          /* panneaux */
+  --bg2:#1b222c;          /* surélevé / chips */
+  --bg3:#222b37;          /* hover */
+  --line:#27303d;         /* filets */
+  --line2:#33405085;      /* filets forts */
+  --ink:#eef2f7;
+  --ink2:#a9b4c4;
+  --mute:#7b8697;
+  --accent:#6ba6f0;       /* UI uniquement (onglets, liens, focus) */
+  --accent-dim:#6ba6f022;
+  /* familles (série catégorielle validée, surface #151a21) */
+  --c-priv:#3987e5;
+  --c-mod:#d95926;
+  --c-pets:#199e70;
+  --c-neutre:#98a2b3;     /* gouvernance & structures — hors série, forme + libellé */
+  /* statuts (icône + libellé obligatoires) */
+  --st-good:#0ca30c; --st-warn:#fab219; --st-serious:#ec835a; --st-crit:#d03b3b;
+  --font-d:"Archivo","Avenir Next Condensed","Helvetica Neue",Arial,sans-serif;
+  --font-b:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
+  --font-m:"IBM Plex Mono","SFMono-Regular",Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg0); color:var(--ink);
+  font-family:var(--font-b); font-size:15.5px; line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+[hidden]{display:none!important}
+a{color:var(--accent); text-decoration:none}
+a:hover{text-decoration:underline}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:3px}
+::selection{background:#3987e555}
+.wrap{max-width:1180px; margin:0 auto; padding:0 28px}
+.mono{font-family:var(--font-m)}
+
+/* ---------- entête ---------- */
+header.top{
+  position:relative; overflow:hidden;
+  background:linear-gradient(180deg,#10141b 0%,var(--bg0) 100%);
+  border-bottom:1px solid var(--line);
+}
+.sweep{
+  position:absolute; right:-140px; top:-190px; width:520px; height:520px;
+  border-radius:50%; pointer-events:none; opacity:.55;
+  background:
+    repeating-radial-gradient(circle at center, transparent 0 54px, #27303d55 54px 55px),
+    conic-gradient(from 0deg, transparent 0deg, #3987e51e 300deg, #3987e548 352deg, #7fb4f26e 359deg, transparent 360deg);
+  -webkit-mask:radial-gradient(circle, #000 0 62%, transparent 70%);
+          mask:radial-gradient(circle, #000 0 62%, transparent 70%);
+  animation:sweep 14s linear infinite;
+}
+.sweep::after{content:""; position:absolute; inset:0; border-radius:50%; border:1px solid #33405066}
+@keyframes sweep{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){ .sweep{animation:none} *{scroll-behavior:auto!important} }
+.brand{padding:40px 0 26px; position:relative; z-index:1}
+.brand .eyebrow{margin-bottom:10px}
+h1.site{
+  font-family:var(--font-d); font-weight:800; letter-spacing:-.015em;
+  font-size:clamp(30px,4.6vw,46px); line-height:1.04; margin:0 0 10px; text-wrap:balance;
+}
+h1.site .thin{font-weight:500; color:var(--ink2)}
+.tagline{max-width:640px; color:var(--ink2); margin:0 0 18px; font-size:16px}
+.metachips{display:flex; flex-wrap:wrap; gap:8px}
+.mchip{
+  font-family:var(--font-m); font-size:11.5px; letter-spacing:.04em;
+  padding:5px 10px; border:1px solid var(--line); border-radius:999px;
+  color:var(--ink2); background:#151a2199;
+}
+.mchip b{color:var(--ink); font-weight:600}
+.mchip.next{border-color:#3987e566; color:var(--accent)}
+
+/* ---------- navigation ---------- */
+nav.tabs{
+  position:sticky; top:0; z-index:40;
+  background:#0e1116ee; backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);
+}
+.tabrow{display:flex; gap:4px; overflow-x:auto; scrollbar-width:none}
+.tabrow::-webkit-scrollbar{display:none}
+.tab{
+  appearance:none; background:none; border:none; cursor:pointer;
+  font-family:var(--font-m); font-size:12px; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--mute); padding:15px 13px 13px; border-bottom:2px solid transparent; white-space:nowrap;
+}
+.tab:hover{color:var(--ink2)}
+.tab[aria-selected="true"]{color:var(--ink); border-bottom-color:var(--accent)}
+.tab .k{color:var(--accent); margin-right:6px; font-weight:600}
+
+/* ---------- structure commune ---------- */
+main{padding:34px 0 10px}
+section.view{padding-bottom:26px}
+.eyebrow{
+  font-family:var(--font-m); font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--mute);
+}
+.eyebrow .dot{display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:7px; vertical-align:1px}
+h2.sec{
+  font-family:var(--font-d); font-weight:700; letter-spacing:-.01em;
+  font-size:clamp(21px,2.6vw,27px); margin:6px 0 8px; text-wrap:balance;
+}
+.lead{color:var(--ink2); max-width:70ch; margin:0 0 22px}
+.lead b,.lead strong{color:var(--ink)}
+.blockhead{margin:34px 0 14px}
+.blockhead h3{
+  font-family:var(--font-d); font-weight:700; font-size:18px; margin:4px 0 2px; letter-spacing:-.005em;
+}
+.blockhead p{margin:2px 0 0; color:var(--ink2); font-size:14px; max-width:72ch}
+
+/* ---------- tuiles stat ---------- */
+.stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin:18px 0 22px}
+.stat{background:var(--bg1); border:1px solid var(--line); border-radius:10px; padding:14px 16px 12px}
+.stat .v{font-family:var(--font-d); font-weight:800; font-size:28px; line-height:1.1}
+.stat .l{font-family:var(--font-m); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--mute); margin-top:4px}
+.stat.next .v{font-size:19px; padding-top:6px; color:var(--accent)}
+
+/* ---------- panneau graphe ---------- */
+.panel{background:var(--bg1); border:1px solid var(--line); border-radius:12px}
+.graphpanel{position:relative; margin-bottom:20px}
+.graphhead{display:flex; flex-wrap:wrap; gap:10px; align-items:baseline; justify-content:space-between; padding:16px 18px 6px}
+.graphhead .t{font-family:var(--font-d); font-weight:700; font-size:16px}
+.graphhead .h{font-size:12.5px; color:var(--mute); font-family:var(--font-m)}
+#gwrap{position:relative}
+svg#graph{display:block; width:100%; height:620px; cursor:grab}
+svg#graph.grabbing{cursor:grabbing}
+.gnode{cursor:pointer}
+.gnode text{
+  font-family:var(--font-m); font-size:10.5px; fill:var(--ink2);
+  paint-order:stroke; stroke:#0e1116; stroke-width:3px; pointer-events:none;
+}
+.gnode.dim{opacity:.16}
+.gedge{stroke:#33405077; stroke-width:1.1}
+.gedge.hl{stroke:#7fb4f2; stroke-width:1.6}
+.gedge.dim{opacity:.08}
+.glegend{
+  display:flex; flex-wrap:wrap; gap:4px 18px; align-items:center;
+  padding:2px 18px 10px; font-size:12px; color:var(--ink2);
+  border-bottom:1px solid var(--line);
+}
+.glegend .sw{display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:7px; vertical-align:-1px}
+.glegend .dm{display:inline-block; width:9px; height:9px; margin:0 8px 0 1px; transform:rotate(45deg); background:var(--bg2); border:1.6px solid var(--c-neutre); vertical-align:-1px}
+.glegend .cap{font-family:var(--font-m); font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--mute); margin-left:auto}
+.gtools{position:absolute; left:14px; bottom:14px; display:flex; gap:6px}
+.gbtn{
+  width:30px; height:30px; border-radius:7px; border:1px solid var(--line); background:#151a21ee;
+  color:var(--ink2); font-family:var(--font-m); font-size:14px; cursor:pointer;
+}
+.gbtn:hover{background:var(--bg3); color:var(--ink)}
+#gtip{
+  position:absolute; pointer-events:none; z-index:30; max-width:280px;
+  background:#1b222cf5; border:1px solid var(--line2); border-radius:9px; padding:10px 12px;
+  font-size:12.5px; color:var(--ink2); box-shadow:0 8px 24px #0009; line-height:1.5;
+}
+#gtip .n{font-weight:600; color:var(--ink); font-size:13.5px}
+#gtip .r{font-family:var(--font-m); font-size:11px; color:var(--mute)}
+
+/* ---------- filtres ---------- */
+.filters{display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:4px 0 16px}
+.search{
+  flex:1 1 220px; max-width:330px; background:var(--bg1); border:1px solid var(--line); border-radius:8px;
+  color:var(--ink); font-family:var(--font-b); font-size:14px; padding:8px 12px;
+}
+.search::placeholder{color:var(--mute)}
+.chip{
+  appearance:none; cursor:pointer; font-family:var(--font-m); font-size:11.5px; letter-spacing:.03em;
+  padding:6px 11px; border-radius:999px; border:1px solid var(--line); background:var(--bg1); color:var(--ink2);
+}
+.chip:hover{background:var(--bg3)}
+.chip[aria-pressed="true"]{border-color:var(--accent); color:var(--ink); background:var(--accent-dim)}
+.chip .sw{display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; vertical-align:0}
+.chip.toptab{font-size:12.5px; padding:7px 13px}
+.tbl td .rk{font-family:var(--font-m); color:var(--mute); font-variant-numeric:tabular-nums}
+.tbl td .tag{font-family:var(--font-m); font-size:10px; letter-spacing:.05em; padding:1.5px 6px; border-radius:4px; border:1px solid var(--line2); color:var(--ink2); white-space:nowrap}
+.tbl td .tag.astar{color:#ffd970; border-color:#fab21966} .tbl td .tag.a{color:#7fe07f; border-color:#0ca30c55} .tbl td .tag.ws{color:#7fb4f2; border-color:#3987e555}
+.tbl td .star{color:var(--st-warn); letter-spacing:-1px}
+.tbl .pin{color:#7fb4f2; font-family:var(--font-m); font-size:11px}
+select.sel{
+  background:var(--bg1); border:1px solid var(--line); border-radius:8px; color:var(--ink2);
+  font-family:var(--font-m); font-size:12px; padding:7px 9px; cursor:pointer;
+}
+.count{font-family:var(--font-m); font-size:11.5px; color:var(--mute); margin-left:auto}
+
+/* ---------- cartes personnes ---------- */
+.cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(305px,1fr)); gap:12px}
+.pcard{
+  background:var(--bg1); border:1px solid var(--line); border-radius:11px; padding:15px 16px 13px;
+  display:flex; flex-direction:column; gap:8px; transition:border-color .15s;
+}
+.pcard:hover{border-color:var(--line2)}
+.pcard.flash{border-color:var(--accent); box-shadow:0 0 0 1px var(--accent)}
+.pcard .hd{display:flex; align-items:baseline; gap:8px}
+.pcard .dot{width:9px; height:9px; border-radius:50%; flex:none; align-self:center}
+.pcard .dot.diamond{border-radius:1px; transform:rotate(45deg); background:var(--bg2); border:1.6px solid var(--c-neutre)}
+.pcard .nm{font-family:var(--font-d); font-weight:700; font-size:16.5px; letter-spacing:-.005em}
+.pcard .fl{margin-left:auto; font-size:14px}
+.pcard .role{font-family:var(--font-m); font-size:11.5px; color:var(--mute); letter-spacing:.02em; margin-top:-3px}
+.pcard .role b{color:var(--ink2); font-weight:500}
+.pcard .note{font-size:13.5px; color:var(--ink2); margin:0}
+.pcard .ths{display:flex; flex-wrap:wrap; gap:5px}
+.th{
+  font-family:var(--font-m); font-size:10.5px; letter-spacing:.02em; color:var(--ink2);
+  background:var(--bg2); border:1px solid var(--line); border-radius:5px; padding:2.5px 7px;
+}
+.pcard .ft{display:flex; align-items:center; gap:8px; margin-top:auto; padding-top:4px}
+.badge{
+  font-family:var(--font-m); font-size:9.5px; letter-spacing:.1em; text-transform:uppercase;
+  padding:2.5px 7px; border-radius:4px; border:1px solid var(--line); color:var(--mute);
+}
+.badge.pilier{border-color:#3987e577; color:var(--accent)}
+.badge.src{color:var(--mute)}
+.pcard .ft a{margin-left:auto; font-family:var(--font-m); font-size:11px}
+
+/* ---------- cartes menaces / doctrine ---------- */
+.tgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(330px,1fr)); gap:12px}
+.tcard{background:var(--bg1); border:1px solid var(--line); border-radius:11px; padding:16px 17px 14px}
+.tcard .hd{display:flex; align-items:center; gap:9px; margin-bottom:7px}
+.tcard h4{font-family:var(--font-d); font-weight:700; font-size:15.5px; margin:0; letter-spacing:-.005em}
+.tcard p{margin:0 0 8px; font-size:13.5px; color:var(--ink2)}
+.tcard .kv{font-size:12.5px; color:var(--ink2); margin:6px 0 0; padding-top:8px; border-top:1px dashed var(--line)}
+.tcard .kv b{font-family:var(--font-m); font-size:10.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--mute); font-weight:500; display:block; margin-bottom:2px}
+.sev{
+  font-family:var(--font-m); font-size:10px; letter-spacing:.08em; text-transform:uppercase;
+  padding:3px 8px; border-radius:4px; font-weight:600; flex:none; margin-left:auto;
+}
+.sev.crit{color:#ff9b9b; background:#d03b3b26; border:1px solid #d03b3b66}
+.sev.serious{color:#ffc4a8; background:#ec835a1f; border:1px solid #ec835a5c}
+.sev.warn{color:#ffd970; background:#fab21918; border:1px solid #fab21955}
+.sev.good{color:#7fe07f; background:#0ca30c1c; border:1px solid #0ca30c5c}
+.sev::before{margin-right:5px}
+.sev.crit::before{content:"▲"} .sev.serious::before{content:"◆"} .sev.warn::before{content:"●"} .sev.good::before{content:"■"}
+
+/* ---------- listes de repères / papiers ---------- */
+.papers{border:1px solid var(--line); border-radius:11px; overflow:hidden; margin-top:10px}
+.paper{
+  display:flex; gap:12px; align-items:baseline; padding:10px 15px;
+  border-top:1px solid var(--line); background:var(--bg1); font-size:13.5px;
+}
+.paper:first-child{border-top:none}
+.paper .y{font-family:var(--font-m); font-size:11px; color:var(--mute); flex:none; width:38px}
+.paper .t{color:var(--ink)}
+.paper .m{color:var(--mute); font-size:12.5px}
+.paper .corp{
+  font-family:var(--font-m); font-size:9px; letter-spacing:.08em; color:#7fb4f2;
+  border:1px solid #3987e555; border-radius:4px; padding:1.5px 5px; margin-left:auto; flex:none;
+}
+.note-src{font-size:12px; color:var(--mute); margin-top:8px}
+
+/* ---------- tableaux ---------- */
+.tblwrap{overflow-x:auto; border:1px solid var(--line); border-radius:11px; margin-top:10px}
+table.tbl{border-collapse:collapse; width:100%; min-width:680px; font-size:13.5px; background:var(--bg1)}
+.tbl th{
+  font-family:var(--font-m); font-size:10.5px; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--mute); text-align:left; font-weight:500; padding:11px 14px; border-bottom:1px solid var(--line2);
+}
+.tbl td{padding:11px 14px; border-bottom:1px solid var(--line); vertical-align:top; color:var(--ink2)}
+.tbl tr:last-child td{border-bottom:none}
+.tbl td:first-child{color:var(--ink); font-weight:500}
+.tbl .mono{font-size:12px}
+
+/* ---------- jauges de maturité (ordinal, une teinte) ---------- */
+.meter{display:inline-flex; gap:3px; vertical-align:middle}
+.meter i{width:14px; height:7px; border-radius:2px; background:var(--bg3); border:1px solid var(--line)}
+.meter i.on{background:var(--c-priv); border-color:transparent}
+.meter+span{font-family:var(--font-m); font-size:10.5px; color:var(--mute); margin-left:7px; letter-spacing:.04em}
+
+/* ---------- encadrés ---------- */
+.callout{
+  border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:8px;
+  background:var(--bg1); padding:14px 17px; margin:18px 0; font-size:14px; color:var(--ink2); max-width:860px;
+}
+.callout b{color:var(--ink)}
+.callout.warn{border-left-color:var(--st-warn)}
+.callout.crit{border-left-color:var(--st-crit)}
+.twocol{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+@media (max-width:840px){.twocol{grid-template-columns:1fr}}
+
+/* ---------- sélecteur besoin → techno ---------- */
+.chooser{background:var(--bg1); border:1px solid var(--line); border-radius:12px; padding:18px 19px; margin:14px 0 6px}
+.chooser label{font-family:var(--font-m); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--mute); display:block; margin-bottom:8px}
+.chooser select{width:100%; max-width:560px; font-size:14px; font-family:var(--font-b); background:var(--bg2); border:1px solid var(--line2); color:var(--ink); border-radius:8px; padding:10px 12px; cursor:pointer}
+.reco{margin-top:14px; border-top:1px dashed var(--line); padding-top:14px}
+.reco h4{font-family:var(--font-d); font-size:16px; margin:0 0 6px}
+.reco p{margin:0 0 8px; color:var(--ink2); font-size:13.5px}
+.reco .stack{display:flex; flex-wrap:wrap; gap:6px; margin:8px 0}
+.reco .stack .th{font-size:11px}
+
+/* ---------- veille ---------- */
+.jrnl{border-left:2px solid var(--line2); margin:16px 0 0 6px; padding-left:22px; position:relative}
+.jentry{position:relative; padding-bottom:22px}
+.jentry::before{
+  content:""; position:absolute; left:-27.5px; top:6px; width:9px; height:9px; border-radius:50%;
+  background:var(--accent); border:2px solid var(--bg0);
+}
+.jentry .d{font-family:var(--font-m); font-size:11px; letter-spacing:.08em; color:var(--accent); text-transform:uppercase}
+.jentry h4{font-family:var(--font-d); font-size:16px; margin:3px 0 6px}
+.jentry p, .jentry li{color:var(--ink2); font-size:13.5px}
+.jentry ul{margin:6px 0; padding-left:18px}
+.jentry.ghost::before{background:var(--bg3); border-color:var(--bg0)}
+.jentry.ghost .d{color:var(--mute)}
+.srcs{display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:10px; margin-top:12px}
+.srcs .sc{background:var(--bg1); border:1px solid var(--line); border-radius:9px; padding:11px 13px; font-size:13px}
+.srcs .sc b{display:block; font-weight:600; color:var(--ink); font-size:13.5px}
+.srcs .sc span{color:var(--mute); font-size:12px}
+.srcs .sc a{font-family:var(--font-m); font-size:11px}
+
+/* ---------- pied ---------- */
+footer.bottom{border-top:1px solid var(--line); margin-top:26px; padding:22px 0 34px; color:var(--mute); font-size:12.5px}
+footer.bottom .mono{font-size:11px}
+kbd.pill{font-family:var(--font-m); font-size:10.5px; border:1px solid var(--line2); border-bottom-width:2px; border-radius:5px; padding:1px 6px; color:var(--ink2); background:var(--bg2)}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="sweep" aria-hidden="true"></div>
+  <div class="wrap brand">
+    <div class="eyebrow">Veille personnelle · cycle de 15 jours</div>
+    <h1 class="site">Radar <span class="thin">Sécurité LLM &amp; Agents</span></h1>
+    <p class="tagline">Cartographie mondiale des personnes qui font avancer la sécurité des modèles de langage et des agents IA — et doctrine pour dominer le sujet de façon macro : modèles, données, agents, technologies.</p>
+    <div class="metachips">
+      <span class="mchip">version <b>v2.0</b></span>
+      <span class="mchip">mis à jour le <b>29 août 2026</b></span>
+      <span class="mchip next">prochaine veille · <b>13 septembre 2026</b></span>
+      <span class="mchip" id="chip-counts">—</span>
+      <span class="mchip">🔒 usage privé</span>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Sections">
+  <div class="wrap tabrow" role="tablist">
+    <button class="tab" role="tab" data-v="reseau" aria-selected="true"><span class="k">01</span>Réseau</button>
+    <button class="tab" role="tab" data-v="modeles" aria-selected="false"><span class="k">02</span>Sécurité des modèles</button>
+    <button class="tab" role="tab" data-v="donnees" aria-selected="false"><span class="k">03</span>Sécurité des données</button>
+    <button class="tab" role="tab" data-v="agents" aria-selected="false"><span class="k">04</span>Agents IA</button>
+    <button class="tab" role="tab" data-v="technos" aria-selected="false"><span class="k">05</span>Technologies</button>
+    <button class="tab" role="tab" data-v="tops" aria-selected="false"><span class="k">06</span>Tops</button>
+    <button class="tab" role="tab" data-v="veille" aria-selected="false"><span class="k">07</span>Veille</button>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<!-- ================================================== 01 RÉSEAU -->
+<section class="view" id="v-reseau">
+  <div class="eyebrow"><span class="dot" style="background:var(--c-priv)"></span>Onglet 01 · Le réseau</div>
+  <h2 class="sec">Qui fait avancer la sécurité des LLM dans le monde</h2>
+  <p class="lead">Réseau amorcé depuis les profils Scholar de <b>Reza Shokri</b>, <b>Carmela Troncoso</b> et <b>Aurélien Bellet</b>, étendu aux acteurs mondiaux académiques ET industriels : red teams des labs frontière (Microsoft, Anthropic, OpenAI, Meta, NVIDIA), pôles européens (CISPA, Tübingen, ETH, Zurich/Lausanne), orgs d'évaluation (METR, Apollo, CAIS, AISI) et écosystème français (IPoP, INESIA, ANSSI, CNIL, Zama). Les liens du graphe sont des <b>co-publications ou collaborations documentées</b> ; les affiliations sont celles constatées au 29/08/2026 et re-vérifiées à chaque cycle.</p>
+
+  <div class="stats" id="statrow"></div>
+
+  <div class="panel graphpanel">
+    <div class="graphhead">
+      <span class="t">Graphe de collaborations</span>
+      <span class="h">survol : voisinage · clic : fiche · molette : zoom · glisser : déplacer</span>
+    </div>
+    <div class="glegend" id="glegend"></div>
+    <div id="gwrap">
+      <svg id="graph" role="img" aria-label="Graphe des collaborations entre chercheurs et structures en sécurité des LLM"></svg>
+      <div class="gtools">
+        <button class="gbtn" id="gz-in" aria-label="Zoom avant">+</button>
+        <button class="gbtn" id="gz-out" aria-label="Zoom arrière">−</button>
+        <button class="gbtn" id="gz-reset" aria-label="Réinitialiser la vue">⌂</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="filters">
+    <input class="search" id="q" type="search" placeholder="Chercher un nom, une organisation, un thème…" aria-label="Recherche">
+    <button class="chip" data-fam="all" aria-pressed="true">Tous</button>
+    <button class="chip" data-fam="priv" aria-pressed="false"><span class="sw" style="background:var(--c-priv)"></span>Confidentialité &amp; données</button>
+    <button class="chip" data-fam="mod" aria-pressed="false"><span class="sw" style="background:var(--c-mod)"></span>Modèles &amp; agents</button>
+    <button class="chip" data-fam="pets" aria-pressed="false"><span class="sw" style="background:var(--c-pets)"></span>Crypto &amp; PETs</button>
+    <button class="chip" data-fam="inst" aria-pressed="false"><span class="sw" style="background:var(--c-neutre)"></span>Gouvernance &amp; structures</button>
+    <select class="sel" id="ftype" aria-label="Filtrer par type">
+      <option value="all">Tous types</option>
+      <option value="aca">Académique</option>
+      <option value="ind">Industrie</option>
+      <option value="indep">Indépendant</option>
+      <option value="inst">Institution / projet</option>
+    </select>
+    <button class="chip" id="ffr" aria-pressed="false">🇫🇷 France</button>
+    <span class="count" id="fcount"></span>
+  </div>
+
+  <div class="cards" id="cards"></div>
+
+  <p class="note-src">Badge <span class="mono" style="color:#7fb4f2">CORPUS</span> = issu des profils Scholar fournis en entrée · <span class="mono">VÉRIFIÉ 08/26</span> = affiliation confirmée par recherche web ce mois-ci. Le reste provient de la base de connaissances et sera re-vérifié au prochain cycle.</p>
+</section>
+
+<!-- ================================================== 02 MODÈLES -->
+<section class="view" id="v-modeles" hidden>
+  <div class="eyebrow"><span class="dot" style="background:var(--c-mod)"></span>Onglet 02 · Doctrine</div>
+  <h2 class="sec">Sécurité des modèles</h2>
+  <p class="lead">La surface d'attaque d'un modèle couvre <b>tout son cycle de vie</b> : données d'entraînement → entraînement → chaîne d'approvisionnement → déploiement → inférence. Règle macro : les attaques se transfèrent bien mieux que les défenses, et toute défense non évaluée <b>adaptativement</b> (l'attaquant connaît la défense) doit être présumée cassée.</p>
+
+  <div class="blockhead"><h3>Menaces sur le cycle de vie</h3><p>Sévérité = combinaison de la faisabilité démontrée et de l'impact en production, à date.</p></div>
+  <div class="tgrid">
+    <div class="tcard"><div class="hd"><h4>Empoisonnement &amp; backdoors</h4><span class="sev serious">Sérieux</span></div>
+      <p>Corruption des données ou des poids pour implanter un comportement caché. Quelques centaines de documents suffisent à empoisonner un pré-entraînement web ; « Truth Serum » montre l'empoisonnement pour <i>révéler</i> des secrets.</p>
+      <div class="kv"><b>Défenses</b>Curation &amp; provenance des données, détection d'anomalies (limites démontrées), fine-tuning de nettoyage, éval ciblée.</div>
+      <div class="kv"><b>Repères</b>Truth Serum (CCS 2022) · Bypassing Backdoor Detection (EuroS&amp;P 2020) 📌</div></div>
+    <div class="tcard"><div class="hd"><h4>Jailbreaks</h4><span class="sev serious">Sérieux</span></div>
+      <p>Contournement de l'alignement par optimisation (GCG), reformulation persuasive, many-shot, ou transfert entre modèles. Industrialisé par des arènes publiques (Gray Swan) et des kits open source.</p>
+      <div class="kv"><b>Défenses</b>Entraînement adversarial, classifieurs d'entrée/sortie (Constitutional Classifiers, Llama Guard), circuit breakers, monitoring.</div>
+      <div class="kv"><b>Repères</b>GCG (Zou/Kolter 2023) · Many-shot (Anthropic 2024) · Circuit breakers (2024)</div></div>
+    <div class="tcard"><div class="hd"><h4>Injection de prompt</h4><span class="sev crit">Critique</span></div>
+      <p>Des instructions hostiles arrivent par les <i>données</i> (page web, mail, document, sortie d'outil) et sont exécutées comme des ordres. Problème non résolu — traité en détail dans l'onglet <b>04 · Agents</b>.</p>
+      <div class="kv"><b>Défenses</b>Hiérarchie d'instructions, séparation données/instructions par conception (CaMeL), moindre privilège.</div>
+      <div class="kv"><b>Repères</b>Neural Exec (AISec 2024) 📌 · Instruction Hierarchy (OpenAI 2024)</div></div>
+    <div class="tcard"><div class="hd"><h4>Extraction &amp; vol de modèle</h4><span class="sev warn">Modéré</span></div>
+      <p>Reconstruction de poids, de la couche d'embedding ou du comportement via l'API ; distillation non autorisée d'un modèle frontière vers un clone — désormais un enjeu géopolitique.</p>
+      <div class="kv"><b>Défenses</b>Quotas &amp; détection de motifs de requêtes, filigrane de modèle, CGU + télémétrie, « distillation défensive » des sorties.</div>
+      <div class="kv"><b>Repères</b>The Distillation Game (2026) 📌 · Stealing Part of a Production LM (2024)</div></div>
+    <div class="tcard"><div class="hd"><h4>Exemples adversariaux</h4><span class="sev warn">Modéré</span></div>
+      <p>Perturbations d'entrée qui font basculer la sortie — historiquement vision (Biggio, 2013), aujourd'hui multimodal : images piégées porteuses d'instructions pour les VLM.</p>
+      <div class="kv"><b>Défenses</b>Entraînement adversarial, lissage, filtrage d'entrée multimodale.</div></div>
+    <div class="tcard"><div class="hd"><h4>Chaîne d'approvisionnement</h4><span class="sev serious">Sérieux</span></div>
+      <p>Modèles pré-entraînés compromis sur les hubs, sérialisation dangereuse (pickle), dépendances ML vulnérables, « slopsquatting » de paquets hallucinés.</p>
+      <div class="kv"><b>Défenses</b>Safetensors, signature &amp; SBOM de modèles, scan des hubs, épinglage de versions.</div>
+      <div class="kv"><b>Repères</b>OWASP LLM03 · MITRE ATLAS</div></div>
+  </div>
+
+  <div class="blockhead"><h3>Le camp de la défense — état de l'art</h3><p>Empilement défensif type d'un LLM de production, de l'entraînement au runtime.</p></div>
+  <div class="tblwrap"><table class="tbl">
+    <tr><th>Couche</th><th>Techniques</th><th>Acteurs / outils de référence</th><th>Maturité</th></tr>
+    <tr><td>Alignement à l'entraînement</td><td>RLHF / RLAIF, IA constitutionnelle, entraînement adversarial</td><td>Anthropic, OpenAI, DeepMind</td><td><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><span>déployé</span></td></tr>
+    <tr><td>Garde-fous runtime</td><td>Classifieurs d'entrée/sortie, Constitutional Classifiers, Llama Guard, Granite Guardian</td><td>Anthropic, Meta, IBM, Virtue AI</td><td><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><span>déployé</span></td></tr>
+    <tr><td>Robustesse interne</td><td>Circuit breakers / representation engineering, unlearning ciblé</td><td>Gray Swan, CAIS, CMU</td><td><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span><span>émergent</span></td></tr>
+    <tr><td>Évaluation &amp; red teaming</td><td>HarmBench, AgentDojo, Inspect (AISI), AILuminate (MLCommons), arènes de jailbreak</td><td>AISI, MLCommons, Gray Swan, Giskard, PRISM Eval</td><td><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><span>actif</span></td></tr>
+    <tr><td>Monitoring en production</td><td>Détection d'abus, télémétrie de sécurité, réponse à incident modèle</td><td>Fournisseurs LLM, LLMSecOps naissant</td><td><span class="meter"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><span>naissant</span></td></tr>
+  </table></div>
+
+  <div class="callout"><b>Référentiels à connaître par cœur :</b> OWASP Top 10 LLM (LLM01 injection → LLM10 consommation non bornée), MITRE ATLAS (TTPs adversariales), NIST AI RMF + profil IA générative (AI 600-1), recommandations ANSSI pour l'IA générative. Ils structurent le vocabulaire commun avec les RSSI.</div>
+
+  <div class="blockhead"><h3>Papiers repères de l'onglet</h3><p>📌 = présent dans le corpus Scholar fourni (Shokri, Troncoso, Bellet).</p></div>
+  <div class="papers">
+    <div class="paper"><span class="y">2017</span><span class="t">Membership Inference Attacks against ML Models <span class="m">· Shokri et al., S&amp;P — 8 800+ cit., l'acte fondateur</span></span><span class="corp">corpus</span></div>
+    <div class="paper"><span class="y">2022</span><span class="t">Truth Serum: Poisoning ML Models to Reveal Their Secrets <span class="m">· Tramèr, Shokri, Carlini et al., CCS</span></span><span class="corp">corpus</span></div>
+    <div class="paper"><span class="y">2023</span><span class="t">Universal &amp; Transferable Adversarial Attacks on Aligned LMs (GCG) <span class="m">· Zou, Kolter et al.</span></span></div>
+    <div class="paper"><span class="y">2024</span><span class="t">Low-Cost High-Power Membership Inference (RMIA) <span class="m">· Zarifzadeh, Shokri, ICML</span></span><span class="corp">corpus</span></div>
+    <div class="paper"><span class="y">2025</span><span class="t">Watermark Smoothing Attacks against LMs <span class="m">· Chang, Shokri, EMNLP — les filigranes se lissent</span></span><span class="corp">corpus</span></div>
+    <div class="paper"><span class="y">2026</span><span class="t">The Distillation Game: Adaptive Attacks &amp; Efficient Defenses <span class="m">· Allouah, Shokri et al.</span></span><span class="corp">corpus</span></div>
+  </div>
+</section>
+<!-- ================================================== 03 DONNÉES -->
+<section class="view" id="v-donnees" hidden>
+  <div class="eyebrow"><span class="dot" style="background:var(--c-priv)"></span>Onglet 03 · Doctrine</div>
+  <h2 class="sec">Sécurité des données</h2>
+  <p class="lead">Un LLM est une <b>copie avec perte de ses données d'entraînement</b>. La bonne question n'est pas « mémorise-t-il ? » mais <b>combien, quoi, et qui peut l'extraire</b> — puis : comment l'auditer, le borner, et le prouver à un régulateur. C'est le territoire historique du trio Shokri – Bellet – Troncoso qui amorce ce radar.</p>
+
+  <div class="blockhead"><h3>Chaîne des risques</h3></div>
+  <div class="tgrid">
+    <div class="tcard"><div class="hd"><h4>Mémorisation &amp; extraction</h4><span class="sev crit">Critique</span></div>
+      <p>Les modèles régurgitent des séquences d'entraînement (PII, code, œuvres). Extraction démontrée à l'échelle sur des modèles alignés de production ; la quantification fine devient un sous-domaine (théorie de l'information).</p>
+      <div class="kv"><b>Tests</b>Canaris, attaques d'extraction, quantification par MI granulaire (ICLR 2026 📌).</div>
+      <div class="kv"><b>Contre-mesures</b>Déduplication, DP-SGD, filtres de sortie, unlearning (fragile).</div></div>
+    <div class="tcard"><div class="hd"><h4>Inférence d'appartenance (MIA)</h4><span class="sev serious">Sérieux</span></div>
+      <p>Déterminer si une donnée a servi à l'entraînement. Lignée 2017 → LiRA → RMIA (faible coût, forte puissance) ; variantes contextuelles pour LLM pré-entraînés, et « dataset inference » pour prouver l'usage d'un corpus entier.</p>
+      <div class="kv"><b>Usage</b>Audit de conformité, contentieux copyright, mesure du risque avant mise en production.</div>
+      <div class="kv"><b>Repères</b>Enhanced MIA (CCS 2022) · RMIA (ICML 2024) · Context-Aware MIA (EMNLP 2025) 📌</div></div>
+    <div class="tcard"><div class="hd"><h4>Données synthétiques : fausse immunité</h4><span class="sev serious">Sérieux</span></div>
+      <p>« On partage du synthétique, donc c'est anonyme » — faux. Le texte synthétique fait écho aux canaris de son corpus source ; l'aptitude du synthétique dépend de la tâche et se mesure, elle ne se décrète pas.</p>
+      <div class="kv"><b>Repères</b>The Canary's Echo (ICML 2025) 📌 · Should I use Synthetic Data for That? (2026) 📌 · Privacy amplification par synthèse : garanties réelles mais étroites 📌</div></div>
+    <div class="tcard"><div class="hd"><h4>Fuites via RAG, embeddings &amp; agents</h4><span class="sev serious">Sérieux</span></div>
+      <p>Les vecteurs s'inversent en texte ; un index RAG mal cloisonné devient un canal d'exfiltration ; un agent transporte des données personnelles hors de leur contexte d'origine.</p>
+      <div class="kv"><b>Contre-mesures</b>Cloisonnement par identité (ACL au niveau retrieval), chiffrement des index, intégrité contextuelle (onglet 04), minimisation.</div>
+      <div class="kv"><b>Repères</b>OWASP LLM08 (vecteurs &amp; embeddings) · Can LLMs Keep a Secret? (ICLR 2024) 📌</div></div>
+    <div class="tcard"><div class="hd"><h4>Audit de confidentialité</h4><span class="sev good">Maîtrisable</span></div>
+      <p>Mesurer ε en pratique, pas seulement sur le papier : audits DP en un run puis <b>zéro run</b>, canaris optimisés, bugs réels des bibliothèques DP découverts en boîte grise.</p>
+      <div class="kv"><b>Outils</b>ML Privacy Meter (Shokri) · audits DP-SGD (Bellet, Papernot, Cebere) · dp-recorder (PETS 2026) 📌</div></div>
+    <div class="tcard"><div class="hd"><h4>Conformité &amp; cadre juridique</h4><span class="sev warn">Structurant</span></div>
+      <p>RGPD (base légale, minimisation, droits) + AI Act — application générale depuis <b>août 2026</b>, obligations GPAI depuis août 2025. La CNIL outille ; le principe de minimisation devient opérationnalisable en ML.</p>
+      <div class="kv"><b>Repères</b>Fiches IA CNIL · The Data Minimization Principle in ML (FAccT 2025) 📌 · AI Act (calendrier 2025-2027)</div></div>
+  </div>
+
+  <div class="blockhead"><h3>Matrice risque → test → contre-mesure</h3></div>
+  <div class="tblwrap"><table class="tbl">
+    <tr><th>Risque</th><th>Comment le mesurer</th><th>Contre-mesure de référence</th><th>Limite connue</th></tr>
+    <tr><td>Régurgitation de PII</td><td>Extraction ciblée + canaris</td><td>Déduplication + DP-SGD + filtres de sortie</td><td>Coût utilité/latence du DP à grande échelle</td></tr>
+    <tr><td>Appartenance d'un document</td><td>MIA (RMIA, contextuelle)</td><td>DP, régularisation, early stopping</td><td>Faux positifs sur données dupliquées</td></tr>
+    <tr><td>Usage non autorisé d'un corpus</td><td>Dataset inference 📌</td><td>Traçabilité de provenance, licences</td><td>Cadre probatoire encore jeune</td></tr>
+    <tr><td>Fuite par modèle « anonymisé »</td><td>Canaris dans le synthétique 📌</td><td>Génération sous DP, évaluation par attaque</td><td>Utilité dégradée sur les cas rares</td></tr>
+    <tr><td>ε annoncé ≠ ε réel</td><td>Audit boîte grise des libs DP 📌</td><td>Bibliothèques auditées (Opacus, OpenDP)</td><td>Bugs d'implémentation récurrents</td></tr>
+  </table></div>
+
+  <div class="callout"><b>Position macro à retenir :</b> la protection ne se déclare pas, elle se <b>mesure par l'attaque</b> (position commune Shokri/Troncoso/Bellet). Un chiffre d'ε, un dataset « anonymisé » ou un synthétique sans audit adversarial ne valent rien en face d'un régulateur ou d'un attaquant compétent.</div>
+</section>
+
+<!-- ================================================== 04 AGENTS -->
+<section class="view" id="v-agents" hidden>
+  <div class="eyebrow"><span class="dot" style="background:var(--c-mod)"></span>Onglet 04 · Doctrine</div>
+  <h2 class="sec">Sécurité des agents IA</h2>
+  <p class="lead">Le front le plus chaud. Un agent ajoute au LLM des <b>outils, une mémoire, de l'autonomie et des pairs</b> — chaque ajout est une surface d'attaque. Boussole de Willison, la « trifecta létale » : <b>accès à des données privées</b> + <b>exposition à du contenu non fiable</b> + <b>canal de communication vers l'extérieur</b>. Les trois réunis = exfiltration possible, quelle que soit la qualité du modèle.</p>
+
+  <div class="callout crit"><b>▲ L'injection de prompt n'est pas résolue.</b> Aucun modèle, aucun garde-fou ne la bloque à 100 %. La sécurité d'un agent se joue donc dans l'<b>architecture</b> (privilèges, isolation, validation), jamais dans la seule vigilance du modèle.</div>
+
+  <div class="blockhead"><h3>Chaîne d'attaque d'un agent</h3><p>Chaque étage se compromet indépendamment.</p></div>
+  <div class="tblwrap"><table class="tbl">
+    <tr><th>Étage</th><th>Menace</th><th>Exemple documenté</th><th>Parade principale</th></tr>
+    <tr><td>Perception (web, mails, docs)</td><td>Injection indirecte</td><td>« Not what you've signed up for » (Greshake, Abdelnabi 2023) ; Neural Exec 📌</td><td>Marquage des sources, spotlighting, filtres</td></tr>
+    <tr><td>Raisonnement</td><td>Confusion instructions/données</td><td>Jailbreaks en profondeur de contexte</td><td>Hiérarchie d'instructions, CaMeL</td></tr>
+    <tr><td>Outils / MCP</td><td>Outil empoisonné, rug pull, RCE</td><td>Descriptions d'outils piégées, serveurs MCP malveillants</td><td>Allowlist, signature, sandbox, revue des manifestes</td></tr>
+    <tr><td>Mémoire</td><td>Empoisonnement persistant</td><td>Démos d'implants mémoire (Rehberger, 2024-2025)</td><td>Provenance des souvenirs, TTL, revue humaine</td></tr>
+    <tr><td>Action</td><td>Excès d'autonomie, exfiltration</td><td>Exfiltration via rendu d'images markdown</td><td>Moindre privilège, human-in-the-loop, egress control</td></tr>
+    <tr><td>Multi-agents</td><td>Propagation entre agents</td><td>Firewalls to Secure Dynamic LLM Agentic Networks (TMLR 2026) 📌</td><td>Pare-feu inter-agents, contrats de tâche</td></tr>
+  </table></div>
+
+  <div class="blockhead"><h3>Patterns défensifs qui comptent</h3></div>
+  <div class="tgrid">
+    <div class="tcard"><div class="hd"><h4>Sécurité par conception</h4><span class="sev good">À privilégier</span></div>
+      <p>CaMeL (DeepMind/ETH 2025) : séparer flux de contrôle et flux de données, le contenu non fiable ne pilote jamais les capacités. Pattern dual-LLM de Willison ; hiérarchie d'instructions d'OpenAI.</p></div>
+    <div class="tcard"><div class="hd"><h4>Confinement &amp; privilèges</h4><span class="sev good">À privilégier</span></div>
+      <p>Sandbox d'exécution, permissions par tâche, validation humaine des actions irréversibles, contrôle des sorties réseau. C'est de la sécurité systèmes classique appliquée à un composant non déterministe.</p></div>
+    <div class="tcard"><div class="hd"><h4>Pare-feu &amp; politiques inter-agents</h4><span class="sev warn">Émergent</span></div>
+      <p>Règles de conversation dérivées automatiquement, durcies hors ligne (Abdelnabi et al. 📌) ; intégrité contextuelle apprise par RL pour décider quelle information circule (NeurIPS 2025 📌).</p></div>
+    <div class="tcard"><div class="hd"><h4>Évaluation d'agents</h4><span class="sev warn">Émergent</span></div>
+      <p>AgentDojo (ETH/Tramèr) pour l'injection sous outils ; Minerva 📌 pour la mémoire ; arènes Gray Swan pour l'attaque humaine de masse ; benchmarks OWASP Agentic en cours.</p></div>
+  </div>
+
+  <div class="blockhead"><h3>Personnes-clés sur ce front</h3><p>Voir l'onglet 01 pour les fiches complètes.</p></div>
+  <p class="lead" style="margin-bottom:0">Abdelnabi (MPI-IS), Willison &amp; Rehberger (la pratique offensive publique), Fritz (CISPA), Bagdasarian (UMass/Google), Tramèr (ETH), Wallace (OpenAI), Shokri (NUS/Google) — plus OWASP GenAI et l'AISI côté cadres. Standards à suivre : sécurité MCP (authentification, consentement outil par outil), identité &amp; délégation d'agents (OAuth adapté aux agents).</p>
+</section>
+<!-- ================================================== 05 TECHNOS -->
+<section class="view" id="v-technos" hidden>
+  <div class="eyebrow"><span class="dot" style="background:var(--c-pets)"></span>Onglet 05 · Doctrine</div>
+  <h2 class="sec">Technologies pour apporter la sécurité — quelle crypto, pour quoi</h2>
+  <p class="lead">Réponse macro à « quelle cryptographie ? » : <b>la crypto protège les données et les calculs, pas le raisonnement</b>. Elle est décisive contre la fuite et pour la preuve (confidentialité, intégrité, auditabilité) ; elle est <b>inopérante contre l'injection de prompt</b>, qui est un problème d'architecture. D'où la stack pragmatique 2026 : <b>TEE + DP + gouvernance</b>, avec FHE/MPC/ZK en montée ciblée.</p>
+
+  <div class="chooser">
+    <label for="need">J'ai besoin de…</label>
+    <select id="need"></select>
+    <div class="reco" id="reco"></div>
+  </div>
+
+  <div class="blockhead"><h3>Arsenal — état de maturité</h3><p>Jauges : maturité d'usage en production pour des systèmes LLM, à date (échelle interne du radar).</p></div>
+  <div class="tblwrap"><table class="tbl">
+    <tr><th>Brique</th><th>Ce qu'elle protège</th><th>Outils / acteurs de référence</th><th>Maturité LLM</th></tr>
+    <tr><td>Confidentialité différentielle (DP)</td><td>Les individus du corpus d'entraînement (garantie mathématique ε)</td><td>Opacus, OpenDP, TF-Privacy · audits : Bellet, Papernot, Shokri</td><td><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><span>déployé (hors frontière)</span></td></tr>
+    <tr><td>Apprentissage fédéré + agrégation sécurisée</td><td>La localisation des données (elles ne bougent pas)</td><td>declearn &amp; FLamby (Inria 📌), Flower · SecAgg</td><td><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><span>déployé</span></td></tr>
+    <tr><td>Enclaves / TEE (confidential computing)</td><td>Données et modèle <b>pendant</b> le calcul, vis-à-vis de l'hébergeur</td><td>Intel TDX, AMD SEV-SNP, NVIDIA H100 CC · Apple PCC (architecture de référence) · Mithril (FR)</td><td><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span><span>le pragmatique 2026</span></td></tr>
+    <tr><td>Chiffrement homomorphe (FHE)</td><td>L'inférence sur données chiffrées de bout en bout</td><td>Schémas : CKKS (approx.), BFV/BGV (exact), TFHE (bootstrapping programmable) · Zama Concrete ML (FR), OpenFHE, Lattigo, SEAL · HE vérifiable : Veritas 📌</td><td><span class="meter"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><span>pilotes ; coût ×10³-10⁴ sur LLM</span></td></tr>
+    <tr><td>Calcul multipartite (MPC)</td><td>Un calcul joint sans révéler les entrées de chacun</td><td>MP-SPDZ, famille SPDZ · Helium : MPC léger sous churn (CCS 2024 📌)</td><td><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span><span>niches en prod</span></td></tr>
+    <tr><td>Preuves ZK (zkML)</td><td>Prouver une propriété (bon modèle, entraînement DP) sans révéler le reste</td><td>ezkl · Confidential-DPproof (ICLR 2024 📌)</td><td><span class="meter"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><span>recherche avancée</span></td></tr>
+    <tr><td>Filigrane &amp; provenance</td><td>Traçabilité des contenus générés</td><td>SynthID (DeepMind, Nature 2024), C2PA · attaques : Watermark Smoothing 📌</td><td><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span><span>déployé mais fragile</span></td></tr>
+    <tr><td>Désapprentissage (unlearning)</td><td>Retrait a posteriori d'une donnée / connaissance</td><td>Recherche active ; vérification difficile</td><td><span class="meter"><i class="on"></i><i></i><i></i><i></i><i></i></span><span>recherche</span></td></tr>
+    <tr><td>Crypto post-quantique (PQC)</td><td>Canaux &amp; stockage de la stack IA à horizon quantique</td><td>ML-KEM / ML-DSA (NIST) — hygiène d'infrastructure, pas spécifique aux LLM</td><td><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><span>migration en cours</span></td></tr>
+  </table></div>
+
+  <div class="callout"><b>Ton terrain de jeu :</b> l'axe FHE × ML (ta thèse) croise ici Zama, le couple Veritas/Helium du groupe Hubaux-Troncoso, et la question ouverte qui compte : <b>l'inférence LLM sous chiffrement à coût acceptable</b> — personne ne l'a. La fenêtre différenciante côté recherche française : HE vérifiable + audits DP, exactement à l'intersection de ce radar.</div>
+</section>
+
+<!-- ================================================== 06 TOPS -->
+<section class="view" id="v-tops" hidden>
+  <div class="eyebrow"><span class="dot" style="background:var(--accent)"></span>Onglet 06 · Classements</div>
+  <h2 class="sec">Tops &amp; classements du domaine</h2>
+  <p class="lead">Six palmarès pour cadrer le terrain : entreprises, chercheurs, recherches fondatrices, outils open source, revues où publier, conférences où être. Les listes fondées sur un classement externe stable (CORE pour les conférences, quartile SJR pour les revues) le citent ; les autres sont des <b>sélections raisonnées du radar</b>, ordonnées par influence dans <i>ce</i> domaine, pas par métrique absolue — révisées à chaque cycle.</p>
+
+  <div class="filters">
+    <button class="chip toptab" data-top="cos" aria-pressed="true">🏢 Entreprises</button>
+    <button class="chip toptab" data-top="res" aria-pressed="false">🎓 Chercheurs</button>
+    <button class="chip toptab" data-top="pap" aria-pressed="false">📄 Recherches fondatrices</button>
+    <button class="chip toptab" data-top="oss" aria-pressed="false">🛠️ Outils open source</button>
+    <button class="chip toptab" data-top="jou" aria-pressed="false">📚 Revues</button>
+    <button class="chip toptab" data-top="conf" aria-pressed="false">🎤 Conférences</button>
+    <input class="search" id="qtop" type="search" placeholder="Filtrer la liste…" aria-label="Filtrer le classement" style="flex:0 1 220px">
+    <span class="count" id="topcount"></span>
+  </div>
+  <p class="lead" id="topintro" style="margin:0 0 14px; font-size:13.5px"></p>
+  <div class="tblwrap"><table class="tbl" id="toptbl"></table></div>
+  <p class="note-src" id="topnote"></p>
+</section>
+
+<!-- ================================================== 07 VEILLE -->
+<section class="view" id="v-veille" hidden>
+  <div class="eyebrow"><span class="dot" style="background:var(--accent)"></span>Onglet 07 · Méthode</div>
+  <h2 class="sec">Veille — cycle de 15 jours</h2>
+  <p class="lead">Chaque cycle reconstruit le réseau : mouvements de personnes, nouveaux papiers marquants, nouveaux outils, incidents, régulation. Le site est régénéré à chaque passage ; ce journal garde la trace des versions.</p>
+
+  <div class="twocol">
+    <div class="panel" style="padding:17px 19px">
+      <div class="eyebrow" style="margin-bottom:8px">Checklist du cycle</div>
+      <ol style="margin:0; padding-left:20px; color:var(--ink2); font-size:13.5px; line-height:2">
+        <li>Re-vérifier les affiliations des profils <b>piliers</b> (mouvements labo ↔ industrie)</li>
+        <li>Balayer les nouvelles publications des piliers (Scholar / alphaXiv / arXiv cs.CR)</li>
+        <li>Repérer 2-3 <b>nouveaux entrants</b> (auteurs récurrents, orateurs invités) et les ajouter au graphe</li>
+        <li>Incidents &amp; exploits agents du mois (Willison, Rehberger, avis OWASP)</li>
+        <li>Mouvements institutionnels : ANSSI, CNIL, INESIA, AISI, AI Act</li>
+        <li>Mettre à jour les jauges de maturité si un seuil est franchi</li>
+        <li>Écrire l'entrée de journal + pousser sur GitHub</li>
+      </ol>
+    </div>
+    <div class="panel" style="padding:17px 19px">
+      <div class="eyebrow" style="margin-bottom:8px">Mise à jour du site</div>
+      <p style="font-size:13.5px; color:var(--ink2); margin:0 0 10px">Toutes les données vivent dans le bloc <span class="mono" style="color:var(--ink)">const DATA</span> en fin de fichier HTML : personnes, structures, liens, journal. Régénérer = remplacer ce bloc, rien d'autre.</p>
+      <p style="font-size:13.5px; color:var(--ink2); margin:0">Dans le projet Claude <b>« Sécurité LLM »</b>, demander : <i>« lance le cycle de veille et régénère le radar »</i> — la copie de travail du site y est archivée. Possibilité d'automatiser en tâche planifiée tous les 15 jours.</p>
+    </div>
+  </div>
+
+  <div class="blockhead"><h3>Sources surveillées</h3></div>
+  <div class="srcs">
+    <div class="sc"><b>arXiv cs.CR / cs.LG</b><span>flux quotidien des prépublications</span><br><a href="https://arxiv.org/list/cs.CR/recent" target="_blank" rel="noopener">arxiv.org/list/cs.CR</a></div>
+    <div class="sc"><b>Simon Willison — Weblog</b><span>injection de prompt, agents, synthèses</span><br><a href="https://simonwillison.net" target="_blank" rel="noopener">simonwillison.net</a></div>
+    <div class="sc"><b>Embrace the Red</b><span>exploits d'agents, démos d'exfiltration</span><br><a href="https://embracethered.com" target="_blank" rel="noopener">embracethered.com</a></div>
+    <div class="sc"><b>OWASP GenAI Security</b><span>Top 10 LLM, initiative agentique</span><br><a href="https://genai.owasp.org" target="_blank" rel="noopener">genai.owasp.org</a></div>
+    <div class="sc"><b>AI Security Institute (UK)</b><span>évaluations, Inspect, rapports</span><br><a href="https://www.aisi.gov.uk" target="_blank" rel="noopener">aisi.gov.uk</a></div>
+    <div class="sc"><b>MITRE ATLAS</b><span>TTPs, études de cas</span><br><a href="https://atlas.mitre.org" target="_blank" rel="noopener">atlas.mitre.org</a></div>
+    <div class="sc"><b>ANSSI</b><span>doctrine française, recommandations IA</span><br><a href="https://cyber.gouv.fr" target="_blank" rel="noopener">cyber.gouv.fr</a></div>
+    <div class="sc"><b>CNIL — IA</b><span>fiches pratiques, RGPD × IA</span><br><a href="https://www.cnil.fr" target="_blank" rel="noopener">cnil.fr</a></div>
+    <div class="sc"><b>Anthropic — Research</b><span>red teaming, interprétabilité, safeguards</span><br><a href="https://www.anthropic.com/research" target="_blank" rel="noopener">anthropic.com/research</a></div>
+    <div class="sc"><b>Conférences noyau</b><span>IEEE S&amp;P · USENIX Sec · CCS · NDSS · SaTML · PETS + ICML/NeurIPS/ICLR</span></div>
+  </div>
+
+  <div class="blockhead"><h3>Journal des cycles</h3></div>
+  <div class="jrnl">
+    <div class="jentry">
+      <div class="d">Chantier #1 · 29 août 2026</div>
+      <h4>v2.0 — Expansion académie + industrie, et classements</h4>
+      <ul>
+        <li>Réseau porté à <b>68 personnes et 24 structures</b> : red teams des grands labs (Microsoft : Russinovich &amp; Ram Shankar ; Anthropic : L. Graham ; OpenAI : Weng), pôle Tübingen (Andriushchenko, Geiping), CISPA (Y. Zhang, Schönherr), défenses d'agents (Gong, Wagner, Debenedetti, Rando, Kang), orgs d'évaluation (METR, Apollo, CAIS, Redwood), France (Palamidessi, Piantanida, Paillier/Zama).</li>
+        <li>Mouvements vérifiés ce cycle : <b>Nasr → OpenAI</b> · <b>Weng → OpenAI</b> (retour, ex-Thinking Machines) · <b>Saxe parti de Meta</b> · Heidecke a quitté OpenAI (équipe safety réorganisée) · Dawn Song également VP AI Research chez Meta.</li>
+        <li>Consolidation du marché actée : Lakera → Check Point (~300 M$, 2026), Protect AI → Palo Alto (2025), Invariant Labs → Snyk, Robust Intelligence → Cisco (2024), CalypsoAI → F5 (2025).</li>
+        <li>Nouvel onglet <b>07 · Tops</b> : classements entreprises, chercheurs, papiers fondateurs, outils open source, revues et conférences.</li>
+      </ul>
+    </div>
+    <div class="jentry">
+      <div class="d">Cycle 0 · 29 août 2026</div>
+      <h4>v1.0 — Amorçage du radar</h4>
+      <ul>
+        <li>Réseau initial : <b>37 personnes, 13 structures, 45 liens documentés</b>, amorcé depuis les profils Scholar fournis (Shokri, Troncoso, Bellet) et leurs co-auteurs.</li>
+        <li>Ajout des fronts monde : extraction/jailbreaks (Carlini, Tramèr, Kolter/Zou), agents (Abdelnabi, Willison, Rehberger), gouvernance (Bengio, AISI).</li>
+        <li>Écosystème FR posé : IPoP (Boutet/Roca, CNIL), INESIA, ANSSI, Zama, Giskard, Mithril, PRISM Eval.</li>
+        <li>Vérifications du cycle : Abdelnabi → MPI-IS/ELLIS Tübingen (cheffe de groupe COMPASS) ; Carlini → Anthropic ; Bo Li → UIUC &amp; Virtue AI.</li>
+        <li>Doctrine v1 posée sur les 4 onglets ; jauges de maturité initialisées.</li>
+      </ul>
+    </div>
+    <div class="jentry ghost">
+      <div class="d">Cycle 1 · prévu le 13 septembre 2026</div>
+      <h4>Au programme</h4>
+      <ul>
+        <li>Cartographier les membres de SSF-ML-DH (page publications encore vide) et relier Bellet/IPoP si confirmé.</li>
+        <li>Compléter les liens Scholar manquants ; passer chaque affiliation « base de connaissances » en « vérifié ».</li>
+        <li>Premier balayage incidents agents + arènes de jailbreak du mois.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="wrap">
+    <span class="mono">RADAR SÉCURITÉ LLM · v2.0 · généré le 29/08/2026 · usage privé — affiliations déclaratives, re-vérifiées à chaque cycle · navigation clavier : <kbd class="pill">1</kbd>–<kbd class="pill">7</kbd></span>
+  </div>
+</footer>
+<script>
+/* ================================================================
+   RADAR SÉCURITÉ LLM — données v2.0 (29/08/2026)
+   Régénérer un cycle de veille = remplacer le bloc DATA ci-dessous.
+   f: priv | mod | pets | inst   ·   t: aca | ind | indep | inst
+   src: "corpus" (profils Scholar fournis) | "ver" (vérifié web) | "" (base, à re-vérifier)
+   ================================================================ */
+const DATA = {
+meta:{version:"v2.0", maj:"29 août 2026", next:"13 septembre 2026"},
+people:[
+ {id:"shokri", n:"Reza Shokri", org:"Google & NUS", role:"Professeur / chercheur", fl:"🇸🇬", cc:"Singapour", t:"aca", f:"priv", tier:1, src:"corpus",
+  th:["Inférence d'appartenance","Audit de confidentialité","Mémorisation LLM"],
+  note:"Pionnier des attaques par inférence d'appartenance (S&P 2017, 8 800+ citations) et du ML Privacy Meter. Aujourd'hui : quantification de la mémorisation des LLM, distillation adverse, pare-feu pour réseaux d'agents."},
+ {id:"bellet", n:"Aurélien Bellet", org:"Inria", role:"Directeur de recherche", fl:"🇫🇷", cc:"France", t:"aca", f:"priv", tier:1, src:"corpus", link:"https://researchers.lille.inria.fr/abellet/",
+  th:["Apprentissage fédéré","Confidentialité différentielle","Audit de confidentialité"],
+  note:"Figure française du fédéré privé (declearn, FLamby, metric-learn). Audits DP « zéro run », DP décentralisée, bugs des bibliothèques DP. Pivot de l'écosystème Inria."},
+ {id:"troncoso", n:"Carmela Troncoso", org:"EPFL & MPI-SP", role:"Professeure · direction scientifique MPI-SP", fl:"🇨🇭", cc:"Suisse", t:"aca", f:"pets", tier:1, src:"corpus",
+  th:["Ingénierie de la vie privée","Données synthétiques","Injection (Neural Exec)"],
+  note:"Référence européenne de l'ingénierie de la vie privée : évaluation critique des PETs et du « privacy washing », client-side scanning, identité numérique UE, injection de prompt (Neural Exec)."},
+ {id:"papernot", n:"Nicolas Papernot", org:"Univ. de Toronto & Vector", role:"Professeur", fl:"🇨🇦", cc:"Canada", t:"aca", f:"priv", tier:1, src:"",
+  th:["Audit DP-SGD","PATE","Désapprentissage"],
+  note:"Co-créateur de PATE ; référence des audits de DP-SGD et des preuves d'entraînement privé (avec Bellet). Co-dirige le programme de recherche de l'institut canadien de sécurité de l'IA (CIFAR)."},
+ {id:"carlini", n:"Nicholas Carlini", org:"Anthropic", role:"Chercheur", fl:"🇺🇸", cc:"États-Unis", t:"ind", f:"mod", tier:1, src:"ver", link:"https://nicholas.carlini.com",
+  th:["Extraction de données","Attaques adaptatives","Casse de défenses"],
+  note:"L'attaquant de référence du ML : extraction de données d'entraînement à l'échelle, démolition méthodique des défenses publiées. Passé de Google DeepMind à Anthropic en 2025."},
+ {id:"tramer", n:"Florian Tramèr", org:"ETH Zürich", role:"Professeur assistant (SPY Lab)", fl:"🇨🇭", cc:"Suisse", t:"aca", f:"mod", tier:1, src:"corpus",
+  th:["Attaques adaptatives","Sécurité des agents","AgentDojo"],
+  note:"Truth Serum, Stealing Part of a Production LM, AgentDojo. Voix la plus écoutée sur la rigueur des évaluations de sécurité — « une défense non attaquée adaptativement n'existe pas »."},
+ {id:"abdelnabi", n:"Sahar Abdelnabi", org:"MPI-IS & ELLIS Tübingen", role:"Cheffe de groupe (COMPASS)", fl:"🇩🇪", cc:"Allemagne", t:"aca", f:"mod", tier:1, src:"ver", link:"https://s-abdelnabi.github.io/",
+  th:["Injection indirecte","Pare-feu d'agents","Multi-agents"],
+  note:"Co-autrice fondatrice de l'injection de prompt indirecte (2023, avec Greshake/Fritz) ; « Firewalls » pour réseaux d'agents (TMLR 2026, avec Shokri). Ex-Microsoft ; membre du panel scientifique de l'AI Act."},
+ {id:"willison", n:"Simon Willison", org:"Indépendant", role:"Créateur de Datasette · blogueur", fl:"🇬🇧", cc:"Royaume-Uni", t:"indep", f:"mod", tier:1, src:"", link:"https://simonwillison.net",
+  th:["Injection de prompt","Trifecta létale","Vulgarisation"],
+  note:"A nommé la « prompt injection » (2022) puis la « lethal trifecta » (2025). Le fil le plus utile pour suivre la sécurité des agents en pratique, semaine après semaine."},
+ {id:"rehberger", n:"Johann Rehberger", org:"Embrace the Red", role:"Red teamer", fl:"🇺🇸", cc:"États-Unis", t:"indep", f:"mod", tier:1, src:"", link:"https://embracethered.com",
+  th:["Exploits d'agents","Exfiltration","Empoisonnement mémoire"],
+  note:"Démos d'exfiltration et d'implants mémoire contre ChatGPT, Copilot, Gemini, Claude (« Month of AI Bugs »). La preuve par l'exploit que la théorie des agents se casse en production."},
+ {id:"kolter", n:"Zico Kolter", org:"Carnegie Mellon", role:"Professeur · administrateur d'OpenAI", fl:"🇺🇸", cc:"États-Unis", t:"aca", f:"mod", tier:1, src:"",
+  th:["Attaques universelles (GCG)","Robustesse","Gouvernance"],
+  note:"Co-auteur de GCG (attaques universelles transférables) ; préside le comité sûreté & sécurité du conseil d'OpenAI — la charnière recherche offensive / gouvernance industrielle."},
+ {id:"bengio", n:"Yoshua Bengio", org:"Mila & LawZero", role:"Professeur · président du rapport international", fl:"🇨🇦", cc:"Canada", t:"aca", f:"inst", tier:1, src:"",
+  th:["Rapport international","Agents & perte de contrôle","Gouvernance"],
+  note:"Préside le Rapport international sur la sécurité de l'IA ; a fondé LawZero (2025) pour des systèmes non agentiques sûrs. Le pont entre recherche et décideurs."},
+ {id:"nasr", n:"Milad Nasr", org:"OpenAI", role:"Chercheur", fl:"🇺🇸", cc:"États-Unis", t:"ind", f:"priv", tier:2, src:"ver",
+  th:["Extraction de données","Attaques privacy","DP"],
+  note:"Extractions de données d'entraînement à l'échelle (dont ChatGPT) avec Carlini ; analyses white-box du fédéré avec Shokri. Trajectoire Google DeepMind → Anthropic → OpenAI (2026)."},
+ {id:"shmatikov", n:"Vitaly Shmatikov", org:"Cornell Tech", role:"Professeur", fl:"🇺🇸", cc:"États-Unis", t:"aca", f:"mod", tier:2, src:"corpus",
+  th:["MIA","Sécurité du ML","RAG"],
+  note:"Co-auteur des MIA fondatrices (2017) et du deep learning privé (2015) ; aujourd'hui sécurité des systèmes RAG, des encodeurs et backdoors sémantiques."},
+ {id:"mireshghallah", n:"Niloofar Mireshghallah", org:"Carnegie Mellon", role:"Professeure assistante", fl:"🇺🇸", cc:"États-Unis", t:"aca", f:"priv", tier:2, src:"corpus",
+  th:["Intégrité contextuelle","Privacy des LLM","NLP"],
+  note:"« Can LLMs Keep a Secret? » (ICLR 2024) : la fuite ne se joue pas à l'entraînement mais dans le contexte. Passerelle NLP ↔ privacy très suivie."},
+ {id:"chang", n:"Hongyan Chang", org:"FAIR (Meta)", role:"Chercheuse", fl:"🇺🇸", cc:"États-Unis", t:"ind", f:"priv", tier:2, src:"corpus",
+  th:["MIA sur LLM","Attaques de filigranes","Fédéré"],
+  note:"MIA contextuelles sur LLM pré-entraînés, lissage de filigranes, audit du fédéré — formée chez Shokri (NUS)."},
+ {id:"wallace", n:"Eric Wallace", org:"OpenAI", role:"Chercheur", fl:"🇺🇸", cc:"États-Unis", t:"ind", f:"mod", tier:2, src:"",
+  th:["Hiérarchie d'instructions","Extraction","Robustesse"],
+  note:"« The Instruction Hierarchy » — la réponse structurelle d'OpenAI à l'injection ; co-auteur des extractions de données d'entraînement fondatrices."},
+ {id:"zou", n:"Andy Zou", org:"CMU & Gray Swan AI", role:"Doctorant · co-fondateur", fl:"🇺🇸", cc:"États-Unis", t:"ind", f:"mod", tier:2, src:"ver",
+  th:["Jailbreaks","Circuit breakers","Red teaming de masse"],
+  note:"De GCG aux circuit breakers ; organise avec Gray Swan les plus grandes arènes publiques de jailbreak d'agents."},
+ {id:"song", n:"Dawn Song", org:"UC Berkeley & Meta", role:"Professeure · VP AI Research (Meta)", fl:"🇺🇸", cc:"États-Unis", t:"aca", f:"mod", tier:2, src:"ver",
+  th:["Sécurité IA","DecodingTrust","Agents"],
+  note:"Vétérane sécurité & deep learning ; évaluation de la fiabilité des LLM (DecodingTrust) et sécurité des systèmes agentiques."},
+ {id:"bli", n:"Bo Li", org:"UIUC & Virtue AI", role:"Professeure · CEO", fl:"🇺🇸", cc:"États-Unis", t:"aca", f:"mod", tier:2, src:"ver",
+  th:["Évaluation de confiance","Garde-fous","Red teaming"],
+  note:"DecodingTrust (prix NeurIPS) ; a co-fondé Virtue AI pour industrialiser garde-fous et évaluations de sécurité."},
+ {id:"biggio", n:"Battista Biggio", org:"Univ. de Cagliari", role:"Professeur", fl:"🇮🇹", cc:"Italie", t:"aca", f:"mod", tier:2, src:"",
+  th:["Adversarial ML (pionnier)","Évasion","Empoisonnement"],
+  note:"Attaques par évasion et empoisonnement démontrées dès 2013, une décennie avant l'ère LLM — la mémoire historique du domaine."},
+ {id:"fritz", n:"Mario Fritz", org:"CISPA", role:"Professeur", fl:"🇩🇪", cc:"Allemagne", t:"aca", f:"mod", tier:2, src:"",
+  th:["Sécurité des LLM","Injection indirecte","Multi-agents"],
+  note:"Dirige le groupe CISPA derrière « Not what you've signed up for » (2023), l'article qui a défini l'injection indirecte."},
+ {id:"bagdasarian", n:"Eugene Bagdasarian", org:"UMass Amherst & Google", role:"Professeur assistant", fl:"🇺🇸", cc:"États-Unis", t:"aca", f:"mod", tier:2, src:"",
+  th:["Intégrité contextuelle","Attaques d'assistants","Backdoors"],
+  note:"AirGap et attaques contre les assistants ; backdoors aveugles avec Shmatikov ; co-auteur des pare-feu d'agents avec Abdelnabi et Shokri."},
+ {id:"mittal", n:"Prateek Mittal", org:"Princeton", role:"Professeur", fl:"🇺🇸", cc:"États-Unis", t:"aca", f:"priv", tier:2, src:"corpus",
+  th:["Robustesse","Privacy","Systèmes"],
+  note:"Sécurité des systèmes et du ML : le compromis robustesse adversariale ↔ privacy, attaques sur le fédéré."},
+ {id:"houmansadr", n:"Amir Houmansadr", org:"UMass Amherst", role:"Professeur", fl:"🇺🇸", cc:"États-Unis", t:"aca", f:"priv", tier:2, src:"corpus",
+  th:["Privacy du fédéré","Analyses white-box","Censure"],
+  note:"Analyses de fuite white-box du deep learning centralisé et fédéré (avec Nasr et Shokri)."},
+ {id:"decristofaro", n:"Emiliano De Cristofaro", org:"UC Riverside", role:"Professeur", fl:"🇺🇸", cc:"États-Unis", t:"aca", f:"priv", tier:2, src:"corpus",
+  th:["Données synthétiques","Mesure","Privacy washing"],
+  note:"Évaluation empirique des PETs et des données synthétiques ; co-anime la réflexion « privacy washing » avec Troncoso (Dagstuhl 2025)."},
+ {id:"klee", n:"Katherine Lee", org:"Google DeepMind", role:"Chercheuse", fl:"🇺🇸", cc:"États-Unis", t:"ind", f:"priv", tier:2, src:"",
+  th:["Mémorisation","Copyright","GenLaw"],
+  note:"Co-autrice des extractions fondatrices ; co-fondatrice de GenLaw — l'interface mémorisation ↔ droit d'auteur."},
+ {id:"cyffers", n:"Edwige Cyffers", org:"CNRS (LAMSADE, Dauphine-PSL)", role:"Chercheuse", fl:"🇫🇷", cc:"France", t:"aca", f:"priv", tier:2, src:"corpus",
+  th:["DP décentralisée","Amplification","Marches aléatoires"],
+  note:"Nouvelle génération française : amplification de confidentialité par décentralisation, ADMM privé — formée chez Bellet."},
+ {id:"tommasi", n:"Marc Tommasi", org:"Univ. de Lille", role:"Professeur", fl:"🇫🇷", cc:"France", t:"aca", f:"priv", tier:2, src:"corpus",
+  th:["ML décentralisé","Privacy de la voix","NLP"],
+  note:"ML décentralisé et anonymisation de la parole (avec Bellet et Inria Magnet)."},
+ {id:"neglia", n:"Giovanni Neglia", org:"Inria Sophia", role:"Directeur de recherche", fl:"🇫🇷", cc:"France", t:"aca", f:"priv", tier:2, src:"corpus",
+  th:["Fédéré","Optimisation","Réseaux"],
+  note:"Apprentissage fédéré multi-tâches et optimisation distribuée (FedEM, avec Bellet)."},
+ {id:"guerraoui", n:"Rachid Guerraoui", org:"EPFL", role:"Professeur", fl:"🇨🇭", cc:"Suisse", t:"aca", f:"priv", tier:2, src:"corpus",
+  th:["Robustesse byzantine","Distribué","P2P"],
+  note:"Robustesse byzantine de l'apprentissage collaboratif — l'angle sûreté distribuée du fédéré."},
+ {id:"shamsabadi", n:"Ali Shahin Shamsabadi", org:"Brave", role:"Chercheur senior", fl:"🇬🇧", cc:"Royaume-Uni", t:"ind", f:"priv", tier:2, src:"corpus",
+  th:["Privacy vérifiable","Télémétrie privée","DP"],
+  note:"Privacy vérifiable (Confidential-DPproof, Nebula) entre recherche et produit chez Brave."},
+ {id:"hubaux", n:"Jean-Pierre Hubaux", org:"EPFL", role:"Professeur", fl:"🇨🇭", cc:"Suisse", t:"aca", f:"pets", tier:2, src:"corpus",
+  th:["HE vérifiable","Santé","MPC"],
+  note:"Vétéran de la privacy appliquée : chiffrement homomorphe vérifiable (Veritas), MPC léger (Helium), données de santé."},
+ {id:"diaz", n:"Claudia Diaz", org:"KU Leuven", role:"Professeure", fl:"🇧🇪", cc:"Belgique", t:"aca", f:"pets", tier:2, src:"corpus",
+  th:["Anonymat","Mixnets","Métriques"],
+  note:"Théoricienne de l'anonymat et des mixnets (COSIC) — le socle métrique dont hérite l'évaluation des PETs."},
+ {id:"danezis", n:"George Danezis", org:"Mysten Labs & UCL", role:"Professeur · co-fondateur", fl:"🇬🇧", cc:"Royaume-Uni", t:"ind", f:"pets", tier:2, src:"corpus",
+  th:["Systèmes distribués","Anonymat","Infra crypto"],
+  note:"De l'anonymat académique aux infrastructures crypto à grande échelle — trajectoire type recherche → industrie."},
+ {id:"preneel", n:"Bart Preneel", org:"KU Leuven (COSIC)", role:"Professeur", fl:"🇧🇪", cc:"Belgique", t:"aca", f:"pets", tier:2, src:"corpus",
+  th:["Cryptographie","Protocoles","Politiques"],
+  note:"Cryptographe de référence en Europe ; voix publique sur chiffrement et politiques de surveillance."},
+ {id:"boutet", n:"Antoine Boutet", org:"INSA Lyon", role:"Maître de conférences · co-coordinateur IPoP", fl:"🇫🇷", cc:"France", t:"aca", f:"priv", tier:2, src:"corpus",
+  th:["Privacy","Géolocalisation","IPoP"],
+  note:"Co-coordonne le projet national IPoP (PEPR Cybersécurité) : collecte, IA privée, anonymisation, conformité."},
+ {id:"roca", n:"Vincent Roca", org:"Inria", role:"Chercheur · co-coordinateur IPoP", fl:"🇫🇷", cc:"France", t:"aca", f:"priv", tier:2, src:"corpus",
+  th:["Privacy mobile","Traçage","IPoP"],
+  note:"Co-coordonne IPoP ; privacy des systèmes mobiles et du traçage."},
+ {id:"russinovich", n:"Mark Russinovich", org:"Microsoft (Azure)", role:"CTO Azure · Deputy CISO", fl:"🇺🇸", cc:"États-Unis", t:"ind", f:"mod", tier:1, src:"",
+  th:["Crescendo","Skeleton Key","Sécurité GenAI cloud"],
+  note:"Fait entrer la sécurité GenAI dans la doctrine cloud : attaques multi-tours (Crescendo, Skeleton Key), poussée de PyRIT et des garde-fous Azure."},
+ {id:"ramshankar", n:"Ram Shankar Siva Kumar", org:"Microsoft", role:"Fondateur de l'AI Red Team", fl:"🇺🇸", cc:"États-Unis", t:"ind", f:"mod", tier:1, src:"ver",
+  th:["Red teaming IA","PyRIT","RAMPART"],
+  note:"« Lessons from red teaming 100 GenAI products » ; outils PyRIT puis RAMPART/Clarity (2026) ; affilié Berkman Klein (Harvard)."},
+ {id:"weng", n:"Lilian Weng", org:"OpenAI", role:"VP Research (Safety)", fl:"🇺🇸", cc:"États-Unis", t:"ind", f:"mod", tier:1, src:"ver",
+  th:["Safety systems","Alignement pratique","Lil'Log"],
+  note:"De retour chez OpenAI (07/2026) après avoir co-fondé Thinking Machines. Son blog Lil'Log reste la meilleure vulgarisation technique safety."},
+ {id:"lgraham", n:"Logan Graham", org:"Anthropic", role:"Head, Frontier Red Team", fl:"🇺🇸", cc:"États-Unis", t:"ind", f:"mod", tier:2, src:"ver",
+  th:["Risques catastrophiques","Évals cyber/CBRN","Red team"],
+  note:"Dirige l'équipe qui mesure les capacités dangereuses des modèles frontière d'Anthropic ; plaide pour des standards de tests communs."},
+ {id:"saxe", n:"Joshua Saxe", org:"Indépendant (ex-Meta)", role:"Ex-lead sécurité IA de Llama", fl:"🇺🇸", cc:"États-Unis", t:"indep", f:"mod", tier:2, src:"ver",
+  th:["CyberSecEval","Purple Llama","Agents cyber"],
+  note:"A construit CyberSecEval et Purple Llama chez Meta (2022-2026) ; son bilan public de ces années est une lecture clé côté défense."},
+ {id:"fredrikson", n:"Matt Fredrikson", org:"Gray Swan AI & CMU", role:"CEO · professeur associé", fl:"🇺🇸", cc:"États-Unis", t:"ind", f:"mod", tier:2, src:"ver",
+  th:["GCG","Inversion de modèles","Red teaming"],
+  note:"De l'inversion de modèles (2015) à GCG (2023) ; industrialise l'attaque avec Gray Swan."},
+ {id:"chaudhuri", n:"Kamalika Chaudhuri", org:"Google DeepMind & UCSD", role:"Principal Scientist", fl:"🇺🇸", cc:"États-Unis", t:"ind", f:"priv", tier:2, src:"ver",
+  th:["Théorie DP","Privacy du ML","Robustesse"],
+  note:"Théoricienne de la confidentialité du ML passée de Meta FAIR à Google DeepMind ; présidente du board ICML."},
+ {id:"derczynski", n:"Leon Derczynski", org:"NVIDIA & ITU Copenhague", role:"Principal Research Scientist", fl:"🇩🇰", cc:"Danemark", t:"ind", f:"mod", tier:2, src:"ver",
+  th:["garak","Scan de vulnérabilités LLM","NLP"],
+  note:"Créateur de garak, le scanner de vulnérabilités LLM de référence, adopté et industrialisé par NVIDIA."},
+ {id:"paillier", n:"Pascal Paillier", org:"Zama", role:"Co-fondateur & CTO", fl:"🇫🇷", cc:"France", t:"ind", f:"pets", tier:2, src:"",
+  th:["FHE","Cryptosystème de Paillier","Concrete"],
+  note:"L'inventeur du chiffrement additivement homomorphe (1999) devenu industriel du FHE — trait d'union entre crypto académique et produit."},
+ {id:"yzhang", n:"Yang Zhang", org:"CISPA", role:"Professeur (tenured)", fl:"🇩🇪", cc:"Allemagne", t:"aca", f:"priv", tier:2, src:"ver",
+  th:["MIA à l'échelle","Fuites de modèles","Mesure"],
+  note:"Le groupe le plus prolifique au monde sur les attaques d'inférence contre les modèles — l'usine à MIA de CISPA."},
+ {id:"gong", n:"Neil Zhenqiang Gong", org:"Duke", role:"Professeur associé", fl:"🇺🇸", cc:"États-Unis", t:"aca", f:"mod", tier:2, src:"ver",
+  th:["Formalisation de l'injection","DataSentinel","PoisonedRAG"],
+  note:"A formalisé et benchmarké l'injection de prompt ; défenses game-théoriques (DataSentinel) et empoisonnement de RAG."},
+ {id:"wagner", n:"David Wagner", org:"UC Berkeley", role:"Professeur", fl:"🇺🇸", cc:"États-Unis", t:"aca", f:"mod", tier:2, src:"ver",
+  th:["StruQ / SecAlign","Défenses injection","Sécurité systèmes"],
+  note:"Vétéran de la sécurité systèmes passé aux défenses structurelles contre l'injection (StruQ, SecAlign — repris par Meta)."},
+ {id:"xiao", n:"Chaowei Xiao", org:"NVIDIA & Johns Hopkins", role:"Professeur assistant · chercheur", fl:"🇺🇸", cc:"États-Unis", t:"aca", f:"mod", tier:2, src:"ver",
+  th:["AutoDAN","Injection automatique","Agents"],
+  note:"AutoDAN et les injections universelles automatiques ; à cheval entre NVIDIA et Johns Hopkins."},
+ {id:"kang", n:"Daniel Kang", org:"UIUC", role:"Professeur assistant", fl:"🇺🇸", cc:"États-Unis", t:"aca", f:"mod", tier:2, src:"ver",
+  th:["Agents exploitant des CVE","Attaques adaptatives","Éco. de la sécurité"],
+  note:"A montré des agents LLM exploitant seuls des vulnérabilités 1-day, puis cassé par attaques adaptatives les défenses anti-injection."},
+ {id:"andriushchenko", n:"Maksym Andriushchenko", org:"ELLIS Tübingen & MPI-IS", role:"Principal Investigator", fl:"🇩🇪", cc:"Allemagne", t:"aca", f:"mod", tier:2, src:"ver",
+  th:["Jailbreaks adaptatifs","AgentHarm","Scaling du red teaming"],
+  note:"Jailbreaks adaptatifs simples qui battent les défenses publiées, AgentHarm, lois d'échelle du red teaming automatisé."},
+ {id:"geiping", n:"Jonas Geiping", org:"ELLIS Tübingen & MPI-IS", role:"Group Leader", fl:"🇩🇪", cc:"Allemagne", t:"aca", f:"mod", tier:2, src:"ver",
+  th:["Attaques par optimisation","Empoisonnement","Sécurité ML"],
+  note:"Attaques par optimisation et découverte automatique d'algorithmes d'attaque — le pôle Tübingen avec Abdelnabi et Andriushchenko."},
+ {id:"hendrycks", n:"Dan Hendrycks", org:"Center for AI Safety", role:"Directeur exécutif", fl:"🇺🇸", cc:"États-Unis", t:"indep", f:"mod", tier:2, src:"ver",
+  th:["HarmBench","Benchmarks safety","Politiques"],
+  note:"De MMLU à HarmBench : l'artisan des benchmarks qui structurent le débat ; conseiller de xAI et Scale AI."},
+ {id:"zhao", n:"Ben Zhao", org:"UChicago (SAND Lab)", role:"Professeur", fl:"🇺🇸", cc:"États-Unis", t:"aca", f:"mod", tier:2, src:"",
+  th:["Glaze / Nightshade","Empoisonnement protecteur"],
+  note:"Retourne l'empoisonnement au profit des créateurs : Glaze et Nightshade protègent les œuvres contre l'entraînement non consenti."},
+ {id:"hzheng", n:"Heather Zheng", org:"UChicago (SAND Lab)", role:"Professeure", fl:"🇺🇸", cc:"États-Unis", t:"aca", f:"mod", tier:2, src:"",
+  th:["Sécurité ML","Systèmes","Adversarial"],
+  note:"Co-dirige le SAND Lab avec Ben Zhao — sécurité des systèmes ML incarnés et des modèles génératifs."},
+ {id:"pinyu", n:"Pin-Yu Chen", org:"IBM Research", role:"Principal Research Scientist", fl:"🇺🇸", cc:"États-Unis", t:"ind", f:"mod", tier:2, src:"",
+  th:["Robustesse","ART","Certification"],
+  note:"Pilier de la robustesse adversariale côté industrie ; derrière l'Adversarial Robustness Toolbox d'IBM."},
+ {id:"schonherr", n:"Lea Schönherr", org:"CISPA", role:"Faculty", fl:"🇩🇪", cc:"Allemagne", t:"aca", f:"mod", tier:2, src:"",
+  th:["Adversarial audio","Deepfakes","Injection"],
+  note:"Sécurité des systèmes génératifs multimodaux — de l'adversarial audio aux injections dans le code généré."},
+ {id:"debenedetti", n:"Edoardo Debenedetti", org:"ETH Zürich", role:"Doctorant · chercheur", fl:"🇨🇭", cc:"Suisse", t:"aca", f:"mod", tier:2, src:"ver",
+  th:["AgentDojo","CaMeL","Design patterns anti-injection"],
+  note:"Le fil rouge des défenses d'agents : AgentDojo, CaMeL, design patterns anti-injection (avec Tramèr et DeepMind)."},
+ {id:"rando", n:"Javier Rando", org:"ETH Zürich & Anthropic", role:"Doctorant · MTS", fl:"🇨🇭", cc:"Suisse", t:"aca", f:"mod", tier:2, src:"ver",
+  th:["Backdoors RLHF","Jailbreaks universels","Adversarial ML"],
+  note:"Backdoors universelles via feedback humain empoisonné ; « adversarial ML n'est pas résolu » — désormais aussi chez Anthropic."},
+ {id:"piantanida", n:"Pablo Piantanida", org:"CentraleSupélec (Paris-Saclay) & ILLS", role:"Professeur", fl:"🇫🇷", cc:"France", t:"aca", f:"priv", tier:2, src:"ver",
+  th:["Limites fondamentales des MIA","Théorie de l'information","Détection"],
+  note:"L'angle théorie de l'information français : limites fondamentales des attaques par inférence, détection de contenus générés."},
+ {id:"palamidessi", n:"Catuscia Palamidessi", org:"Inria & LIX (École polytechnique)", role:"Directrice de recherche", fl:"🇫🇷", cc:"France", t:"aca", f:"priv", tier:2, src:"",
+  th:["d-privacy","DP locale","Fuites quantitatives"],
+  note:"Référence mondiale de la confidentialité formelle (d-privacy, geo-indistinguishability) — le socle théorique côté France."},
+ {id:"ippolito", n:"Daphne Ippolito", org:"Carnegie Mellon", role:"Professeure assistante", fl:"🇺🇸", cc:"États-Unis", t:"aca", f:"priv", tier:2, src:"",
+  th:["Mémorisation","Données d'entraînement","Génération"],
+  note:"Mémorisation des modèles génératifs et hygiène des corpus — co-autrice des travaux fondateurs d'extraction avec Carlini et Lee."},
+ {id:"haddadi", n:"Hamed Haddadi", org:"Imperial College & Brave", role:"Professeur · Chief Scientist", fl:"🇬🇧", cc:"Royaume-Uni", t:"aca", f:"priv", tier:2, src:"",
+  th:["Privacy des systèmes","Télémétrie privée","Edge"],
+  note:"Privacy des systèmes déployés, du navigateur aux wearables ; co-auteur des MIA contextuelles sur LLM."},
+ {id:"fisher", n:"Kathleen Fisher", org:"DARPA (I2O)", role:"Directrice, Information Innovation Office", fl:"🇺🇸", cc:"États-Unis", t:"inst", f:"inst", tier:2, src:"ver",
+  th:["AI Cyber Challenge","Réparation automatique","Méthodes formelles"],
+  note:"Pilote l'AIxCC : des agents IA qui trouvent et corrigent des vulnérabilités dans le code critique — l'IA défensive à l'échelle étatique."},
+ {id:"barnes", n:"Beth Barnes", org:"METR", role:"Fondatrice", fl:"🇺🇸", cc:"États-Unis", t:"inst", f:"inst", tier:2, src:"ver",
+  th:["Évals d'autonomie","Time horizons","Pré-déploiement"],
+  note:"METR mesure ce que les agents savent vraiment faire (time horizons) ; évaluations pré-déploiement pour les labs frontière. TIME100 IA 2026."},
+ {id:"hobbhahn", n:"Marius Hobbhahn", org:"Apollo Research", role:"CEO", fl:"🇬🇧", cc:"Royaume-Uni", t:"inst", f:"inst", tier:2, src:"",
+  th:["Scheming","Évals de tromperie","Sandbagging"],
+  note:"Apollo traque la tromperie stratégique des modèles (scheming, sandbagging) — l'angle le plus dérangeant des évals."},
+ {id:"shlegeris", n:"Buck Shlegeris", org:"Redwood Research", role:"CEO", fl:"🇺🇸", cc:"États-Unis", t:"inst", f:"inst", tier:2, src:"ver",
+  th:["AI control","Sabotage evals","Monitoring"],
+  note:"L'agenda « AI control » : garder la main sur un modèle qu'on suppose adverse — la sécurité pensée comme lutte contre un initié."}
+],
+structures:[
+ {id:"ipop", sn:"IPoP", n:"IPoP — PEPR Cybersécurité", org:"Projet national interdisciplinaire (Inria, CNRS, universités, CNIL)", fl:"🇫🇷", cc:"France", th:["Privacy","IA privée","Anonymisation","Conformité"], link:"https://files.inria.fr/ipop",
+  note:"Le programme structurant français sur la protection des données personnelles : nouvelles formes de collecte, apprentissage préservant la vie privée, DP, conformité RGPD. Coordination Boutet / Roca, CNIL partenaire."},
+ {id:"ssfmldh", sn:"SSF-ML-DH", n:"SSF-ML-DH — PEPR Santé Numérique", org:"Projet ML sûr, sécurisé & équitable pour la santé (2023-2027)", fl:"🇫🇷", cc:"France", th:["Fédéré","Santé","Équité"], link:"https://project.inria.fr/ssfmldh/",
+  note:"ML de santé sûr et équitable. Page publications encore vide — membres à cartographier au prochain cycle."},
+ {id:"inesia", sn:"INESIA", n:"INESIA", org:"Institut national pour l'évaluation et la sécurité de l'IA", fl:"🇫🇷", cc:"France", th:["Évaluation","Sécurité IA","SGDSN"],
+  note:"Pilotage SGDSN/DGE, opéré par ANSSI, Inria, LNE, PEReN. Monte en puissance sur l'évaluation des modèles frontière — porte d'entrée française vers le réseau des instituts (AISI & co)."},
+ {id:"anssi", sn:"ANSSI", n:"ANSSI", org:"Agence nationale de la sécurité des systèmes d'information", fl:"🇫🇷", cc:"France", th:["Doctrine","Recommandations IA"], link:"https://cyber.gouv.fr",
+  note:"Recommandations de sécurité pour les systèmes d'IA générative (2024) ; à surveiller sur la déclinaison agents & MCP."},
+ {id:"cnil", sn:"CNIL", n:"CNIL", org:"Autorité de protection des données", fl:"🇫🇷", cc:"France", th:["RGPD × IA","Fiches pratiques"], link:"https://www.cnil.fr",
+  note:"Fiches IA (base légale, minimisation, droits), partenaire d'IPoP — le régulateur le plus outillé d'Europe sur IA × données."},
+ {id:"aisi", sn:"AISI (UK)", n:"AI Security Institute", org:"Institut public (Royaume-Uni)", fl:"🇬🇧", cc:"Royaume-Uni", th:["Évaluations frontière","Inspect","Red teaming"], link:"https://www.aisi.gov.uk",
+  note:"Ex-AI Safety Institute, recentré « security » en 2025. Évaluations pré-déploiement des modèles frontière, framework open source Inspect."},
+ {id:"owasp", sn:"OWASP GenAI", n:"OWASP GenAI Security", org:"Projet communautaire mondial", fl:"🌍", cc:"Monde", th:["Top 10 LLM","Sécurité agentique"], link:"https://genai.owasp.org",
+  note:"Top 10 LLM + initiative sécurité agentique : le vocabulaire partagé entre chercheurs et RSSI."},
+ {id:"atlas", sn:"MITRE ATLAS", n:"MITRE ATLAS", org:"Base de connaissances TTPs", fl:"🇺🇸", cc:"États-Unis", th:["TTPs adversariales","Threat intel"], link:"https://atlas.mitre.org",
+  note:"Le pendant ML d'ATT&CK : tactiques, techniques et études de cas d'attaques réelles contre des systèmes IA."},
+ {id:"zama", sn:"Zama", n:"Zama", org:"Start-up FHE (Paris)", fl:"🇫🇷", cc:"France", th:["FHE","Concrete ML","TFHE"], link:"https://www.zama.ai",
+  note:"Leader mondial du chiffrement homomorphe appliqué (Concrete, Concrete ML, fhEVM) — l'acteur à suivre sur FHE × IA."},
+ {id:"grayswan", sn:"Gray Swan", n:"Gray Swan AI", org:"Start-up sécurité IA", fl:"🇺🇸", cc:"États-Unis", th:["Red teaming","Circuit breakers","Arènes"], link:"https://www.grayswan.ai",
+  note:"Arènes de jailbreak massives (agents compris) et défenses par circuit breakers — là où se mesure l'état réel de l'attaque."},
+ {id:"giskard", sn:"Giskard", n:"Giskard", org:"Start-up (Paris)", fl:"🇫🇷", cc:"France", th:["Tests LLM","Vulnérabilités","Benchmarks"], link:"https://www.giskard.ai",
+  note:"Scanner open source de vulnérabilités LLM, benchmark Phare — le maillon test & conformité côté français."},
+ {id:"mithril", sn:"Mithril", n:"Mithril Security", org:"Start-up (Paris)", fl:"🇫🇷", cc:"France", th:["IA confidentielle","TEE","Attestation"], link:"https://www.mithrilsecurity.io",
+  note:"Inférence confidentielle attestée en enclaves — le versant TEE français de l'IA de confiance."},
+ {id:"prism", sn:"PRISM Eval", n:"PRISM Eval", org:"Start-up (Paris)", fl:"🇫🇷", cc:"France", th:["Red teaming","Robustesse jailbreak"],
+  note:"Évaluation de la résistance aux jailbreaks (BET) ; jeune pousse française du red teaming LLM — à confirmer au prochain cycle."},
+ {id:"cispa", sn:"CISPA", n:"CISPA Helmholtz", org:"Centre national allemand de sécurité informatique", fl:"🇩🇪", cc:"Allemagne", th:["Sécurité LLM","Privacy","Injection"],
+  note:"La plus grosse concentration européenne de recherche sécurité : Fritz (injection), Zhang (MIA), Schönherr (génératif), Backes (direction)."},
+ {id:"metr", sn:"METR", n:"METR", org:"Organisation d'évaluation indépendante", fl:"🇺🇸", cc:"États-Unis", th:["Time horizons","Évals d'autonomie","Pré-déploiement"], link:"https://metr.org",
+  note:"Mesure l'autonomie réelle des agents (métrique des time horizons) ; évalue les modèles frontière avant déploiement pour les labs."},
+ {id:"apollo", sn:"Apollo", n:"Apollo Research", org:"Organisation d'évaluation (scheming)", fl:"🇬🇧", cc:"Royaume-Uni", th:["Scheming","Tromperie","Évals"],
+  note:"Spécialiste des évaluations de tromperie stratégique et de sandbagging des modèles frontière."},
+ {id:"cais", sn:"CAIS", n:"Center for AI Safety", org:"ONG de recherche et de plaidoyer", fl:"🇺🇸", cc:"États-Unis", th:["HarmBench","Circuit breakers","Statement on AI Risk"],
+  note:"Recherche (HarmBench, circuit breakers avec Gray Swan) et plaidoyer ; a porté la déclaration 2023 sur le risque d'extinction."},
+ {id:"lakera", sn:"Lakera", n:"Lakera (Check Point)", org:"Sécurité GenAI — rachetée ~300 M$ (2026)", fl:"🇨🇭", cc:"Suisse", th:["Gandalf","Guard","Red teaming produit"], link:"https://www.lakera.ai",
+  note:"Créateur du jeu Gandalf (plus grand corpus public d'injections) et de Lakera Guard ; absorbé par Check Point en 2026."},
+ {id:"hiddenlayer", sn:"HiddenLayer", n:"HiddenLayer", org:"Éditeur sécurité IA", fl:"🇺🇸", cc:"États-Unis", th:["MLDR","Scan de modèles","Threat intel IA"],
+  note:"Pionnier de la détection-réponse pour modèles (MLDR) et de la threat intel spécifique IA — l'un des derniers grands indépendants."},
+ {id:"protectai", sn:"Protect AI", n:"Protect AI (Palo Alto)", org:"MLSecOps — racheté (2025)", fl:"🇺🇸", cc:"États-Unis", th:["modelscan","Guardian","huntr"],
+  note:"modelscan, Guardian et le bug bounty IA huntr ; racheté par Palo Alto Networks en 2025 — cœur de son offre Prisma AIRS."},
+ {id:"invariant", sn:"Invariant", n:"Invariant Labs (Snyk)", org:"Spin-off ETH — racheté (2025)", fl:"🇨🇭", cc:"Suisse", th:["Sécurité MCP","mcp-scan","Guardrails d'agents"],
+  note:"A révélé les tool poisoning / rug pulls MCP ; mcp-scan et guardrails d'agents, absorbé par Snyk."},
+ {id:"hf", sn:"Hugging Face", n:"Hugging Face", org:"Plateforme de modèles (franco-américaine)", fl:"🇺🇸", cc:"États-Unis", th:["Hub","safetensors","picklescan"], link:"https://huggingface.co",
+  note:"Le point de passage de la chaîne d'approvisionnement des modèles : safetensors, scan des dépôts, partenariats antivirus de hub."},
+ {id:"euaioffice", sn:"AI Office (UE)", n:"Bureau européen de l'IA", org:"Commission européenne — application de l'AI Act", fl:"🇪🇺", cc:"Europe", th:["AI Act","Code GPAI","Évaluations"],
+  note:"Fait appliquer l'AI Act aux modèles à usage général (obligations GPAI depuis 08/2025, application générale 08/2026) ; monte une capacité d'évaluation."},
+ {id:"aivillage", sn:"AI Village", n:"AI Village (DEF CON)", org:"Communauté hacker", fl:"🇺🇸", cc:"États-Unis", th:["Red teaming public","GRT","Communauté"], link:"https://aivillage.org",
+  note:"A installé le red teaming IA dans la culture hacker (Generative Red Team à DEF CON) — le pont entre infosec classique et sécurité des modèles."}
+],
+edges:[
+ ["shokri","shmatikov"],["shokri","nasr"],["shokri","houmansadr"],["shokri","mireshghallah"],["shokri","chang"],
+ ["shokri","mittal"],["shokri","hubaux"],["shokri","troncoso"],["shokri","tramer"],["shokri","abdelnabi"],["shokri","carlini"],
+ ["troncoso","diaz"],["troncoso","danezis"],["troncoso","preneel"],["troncoso","hubaux"],["troncoso","decristofaro"],["troncoso","mittal"],
+ ["bellet","tommasi"],["bellet","cyffers"],["bellet","papernot"],["bellet","shamsabadi"],["bellet","guerraoui"],["bellet","neglia"],
+ ["carlini","tramer"],["carlini","nasr"],["carlini","papernot"],["carlini","wallace"],["carlini","klee"],["wallace","klee"],
+ ["tramer","mireshghallah"],["nasr","houmansadr"],["papernot","shamsabadi"],
+ ["kolter","zou"],["zou","grayswan"],
+ ["abdelnabi","fritz"],["abdelnabi","bagdasarian"],["bagdasarian","shmatikov"],
+ ["song","bli"],["diaz","danezis"],["diaz","preneel"],
+ ["boutet","ipop"],["roca","ipop"],["boutet","roca"],["cnil","ipop"],["anssi","inesia"],
+ ["fredrikson","zou"],["fredrikson","kolter"],["fredrikson","grayswan"],["zou","cais"],["hendrycks","cais"],["hendrycks","zou"],
+ ["andriushchenko","geiping"],["debenedetti","tramer"],["rando","tramer"],["zhao","hzheng"],
+ ["ippolito","carlini"],["ippolito","klee"],["haddadi","shamsabadi"],["haddadi","chang"],
+ ["russinovich","ramshankar"],["paillier","zama"],["barnes","metr"],["hobbhahn","apollo"],
+ ["fritz","cispa"],["yzhang","cispa"],["schonherr","cispa"],
+ ["wagner","song"],["gong","song"],["abdelnabi","euaioffice"]
+],
+needs:[
+ {id:"train", label:"Entraîner ou affiner un modèle sans exposer les données individuelles",
+  stack:["Fédéré (declearn, FLamby, Flower)","DP-SGD","Agrégation sécurisée","Audit par MIA"],
+  txt:"La voie éprouvée : apprentissage fédéré + confidentialité différentielle. Les données restent chez leurs détenteurs, la garantie ε borne la fuite individuelle, et l'audit par attaque (RMIA, canaris) vérifie la promesse au lieu de la déclarer. Référents du radar : Bellet, Papernot, Shokri.",
+  note:"Maturité : déployé. Point dur — le coût en utilité du DP sur petits corpus et cas rares."},
+ {id:"infer", label:"Faire de l'inférence LLM sur des données sensibles (client, santé, défense)",
+  stack:["TEE : Intel TDX / AMD SEV-SNP / NVIDIA H100 CC","Attestation à distance","FHE ciblé (Concrete ML)","Cloisonnement du RAG"],
+  txt:"Le pragmatique 2026 : enclaves GPU attestées — l'hébergeur ne voit ni les prompts, ni les poids (architecture de référence : Apple Private Cloud Compute). Le FHE reste 10³ à 10⁴ fois trop coûteux pour un LLM complet, mais couvre déjà scoring et petits modèles (Zama). Référents : Hubaux, Mithril, Zama.",
+  note:"Le TEE protège de l'hébergeur — pas d'une injection dans le prompt. Les deux menaces s'additionnent."},
+ {id:"prove", label:"Prouver à un client ou un régulateur une propriété de mon modèle",
+  stack:["Audits DP empiriques (zéro run)","Preuves ZK d'entraînement (Confidential-DPproof)","HE vérifiable (Veritas)","Dataset inference"],
+  txt:"La conformité passe de la parole à la preuve : audits ε empiriques, preuves zero-knowledge qu'un entraînement était bien DP, chiffrement homomorphe vérifiable contre un serveur malveillant, et dataset inference pour établir l'usage d'un corpus. Référents : Bellet/Papernot, Hubaux/Troncoso, Shokri.",
+  note:"Champ jeune — la fenêtre de différenciation recherche est ici."},
+ {id:"leak", label:"Empêcher mon modèle de régurgiter ses données d'entraînement",
+  stack:["Déduplication","DP-SGD si le risque le justifie","Filtres de sortie","Canaris + tests d'extraction","Unlearning (dernier recours)"],
+  txt:"Déduplication d'abord — gros gain, coût quasi nul. DP ensuite selon le risque, filtres de sortie en dernière ligne, et l'audit par extraction comme juge de paix (ML Privacy Meter, canaris). L'unlearning reste fragile et difficile à vérifier.",
+  note:"Mesurer avant/après chaque contre-mesure, sinon c'est du théâtre."},
+ {id:"agent", label:"Sécuriser un agent qui lit du contenu non fiable (web, mails, MCP)",
+  stack:["Architecture CaMeL / dual-LLM","Moindre privilège par tâche","Sandbox d'exécution","Pare-feu d'agents","Validation humaine des actions irréversibles"],
+  txt:"Ici, la crypto ne sauve pas : l'injection de prompt est un problème d'architecture, pas de chiffrement. Casser la trifecta létale — retirer au moins l'un des trois : accès aux données privées, exposition au contenu non fiable, canal de sortie. Référents : Willison, Abdelnabi, Tramèr (AgentDojo).",
+  note:"Règle d'or : ce que l'agent lit ne décide jamais de ce que l'agent peut faire."},
+ {id:"trace", label:"Tracer les contenus générés et prouver leur origine",
+  stack:["Filigrane (SynthID)","Provenance signée (C2PA)","Détection statistique"],
+  txt:"Les filigranes sont déployés mais lissables par attaque (Watermark Smoothing, Chang/Shokri) : à combiner avec la provenance signée côté chaîne de production, et à ne jamais présenter comme une garantie absolue.",
+  note:"Un filigrane est un signal probabiliste, pas une preuve."},
+ {id:"pq", label:"Préparer mon infrastructure IA au risque quantique",
+  stack:["ML-KEM (Kyber)","ML-DSA (Dilithium)","Inventaire crypto & agilité","Signature de modèles"],
+  txt:"Un sujet d'hygiène d'infrastructure plus que de ML : migrer canaux et stockage vers les standards NIST, inventorier les usages crypto de toute la stack — signature et attestation des modèles comprises. Croise directement l'axe PQC × attestation TEE.",
+  note:"« Harvest now, decrypt later » s'applique aux corpus sensibles dès aujourd'hui."}
+]
+};
+
+/* ================= TOPS & classements v2.0 =================
+   Chaque liste : {rank commenté}. Ordre = influence dans CE domaine (sélection du radar),
+   sauf conférences (rang CORE) et revues (quartile SJR) qui citent un classement externe. */
+const TOPS = {
+cos:{ title:"Entreprises & organisations qui comptent",
+ intro:"Trois familles : les labs frontière qui définissent l'état de l'art défensif, les éditeurs de sécurité IA (dont beaucoup viennent d'être rachetés), et les acteurs français. « Rôle » plutôt que « chiffre d'affaires » — ce qui compte ici est le poids sur la sécurité des LLM.",
+ note:"Sélection raisonnée du radar (≈40 entrées), non un classement financier. Vague de consolidation 2024-2026 signalée. À réviser chaque cycle.",
+ cols:["#","Organisation","Pays","Catégorie","Rôle dans la sécurité LLM"],
+ rows:[
+ [1,"Anthropic","🇺🇸","Lab frontière","IA constitutionnelle, Constitutional Classifiers, Frontier Red Team, interprétabilité"],
+ [2,"OpenAI","🇺🇸","Lab frontière","Hiérarchie d'instructions, Preparedness Framework, safety systems"],
+ [3,"Google DeepMind","🇺🇸🇬🇧","Lab frontière","CaMeL, SynthID, Frontier Safety Framework, AGI Safety Council"],
+ [4,"Microsoft","🇺🇸","Lab + cloud","AI Red Team (PyRIT, RAMPART), sécurité GenAI Azure, recherche"],
+ [5,"Meta AI","🇺🇸","Lab frontière","Purple Llama, CyberSecEval, Llama Guard, SecAlign"],
+ [6,"NVIDIA","🇺🇸","Infra + outils","garak, NeMo Guardrails — sécurité de la couche modèle"],
+ [7,"AI Security Institute (UK)","🇬🇧","Institut public","Évaluations frontière, framework Inspect"],
+ [8,"US CAISI (ex-AISI)","🇺🇸","Institut public","Évaluations, standards (NIST)"],
+ [9,"IBM Research","🇺🇸","Industrie","Granite Guardian, Adversarial Robustness Toolbox"],
+ [10,"Amazon / AWS","🇺🇸","Cloud + lab","Bedrock Guardrails, cadre de sûreté des modèles Nova"],
+ [11,"Gray Swan AI","🇺🇸","Startup sécurité","Arènes de jailbreak, circuit breakers, Cygnet"],
+ [12,"Virtue AI","🇺🇸","Startup sécurité","Garde-fous et évaluations (issu de DecodingTrust)"],
+ [13,"HiddenLayer","🇺🇸","Startup sécurité","Détection-réponse pour modèles (MLDR), threat intel IA"],
+ [14,"Protect AI → Palo Alto Networks","🇺🇸","Racheté 2025","MLSecOps, modelscan, huntr → Prisma AIRS"],
+ [15,"Robust Intelligence → Cisco","🇺🇸","Racheté 2024","Validation de modèles, AI firewall"],
+ [16,"Lakera → Check Point","🇨🇭","Racheté 2026","Gandalf, Lakera Guard (~300 M$)"],
+ [17,"CalypsoAI → F5","🇺🇸","Racheté 2025","Sécurité inference, red teaming"],
+ [18,"Invariant Labs → Snyk","🇨🇭","Racheté 2025","Sécurité MCP, guardrails d'agents"],
+ [19,"Prompt Security → SentinelOne","🇮🇱","Racheté 2025","Passerelle de sécurité GenAI d'entreprise"],
+ [20,"Zenity","🇮🇱","Startup sécurité","Sécurité des agents et copilots d'entreprise"],
+ [21,"Zama","🇫🇷","Startup FHE","Chiffrement homomorphe appliqué (Concrete ML, fhEVM)"],
+ [22,"Giskard","🇫🇷","Startup FR","Tests & vulnérabilités LLM, benchmark Phare"],
+ [23,"Mithril Security","🇫🇷","Startup FR","Inférence confidentielle attestée (TEE)"],
+ [24,"PRISM Eval","🇫🇷","Startup FR","Red teaming, robustesse au jailbreak (BET)"],
+ [25,"Hugging Face","🇺🇸","Plateforme","safetensors, scan de dépôts — chaîne d'appro. des modèles"],
+ [26,"Scale AI","🇺🇸","Data + éval","SEAL, red teaming, données d'alignement"],
+ [27,"CISPA Helmholtz","🇩🇪","Recherche publique","Le plus gros pôle sécurité LLM d'Europe"],
+ [28,"ETH Zürich (SPY Lab)","🇨🇭","Recherche","AgentDojo, attaques adaptatives (Tramèr)"],
+ [29,"METR","🇺🇸","Éval indépendante","Évals d'autonomie, time horizons"],
+ [30,"Apollo Research","🇬🇧","Éval indépendante","Évals de tromperie (scheming)"],
+ [31,"Redwood Research","🇺🇸","Recherche","Agenda AI control"],
+ [32,"Center for AI Safety","🇺🇸","ONG","HarmBench, circuit breakers, plaidoyer"],
+ [33,"MITRE","🇺🇸","Public","ATLAS — base de TTPs adversariales IA"],
+ [34,"OWASP GenAI","🌍","Communauté","Top 10 LLM, initiative agentique"],
+ [35,"MLCommons","🌍","Consortium","AILuminate — benchmark de sûreté"],
+ [36,"Inria","🇫🇷","Recherche publique","IPoP, PEPR Cyber, fédéré privé (Bellet, Palamidessi)"],
+ [37,"INESIA","🇫🇷","Institut public","Évaluation & sécurité de l'IA (SGDSN/ANSSI)"],
+ [38,"ANSSI","🇫🇷","Agence publique","Doctrine & recommandations IA générative"],
+ [39,"CNIL","🇫🇷","Régulateur","RGPD × IA, minimisation, fiches pratiques"],
+ [40,"DeepKeep / Pangea / Lasso","🇮🇱🇺🇸","Startups sécurité","Cohorte AI-firewall / observabilité (marché en mouvement)"]
+]},
+res:{ title:"Chercheurs les plus influents",
+ intro:"Ordonnés par influence sur la sécurité des LLM (corpus fourni + recherche alphaXiv/web), pas par h-index brut. Les fiches complètes et le graphe sont dans l'onglet 01 ; cette liste ajoute des noms de contexte au-delà du réseau cartographié.",
+ note:"Sélection raisonnée du radar. « ⭑ » = déjà fiché dans l'onglet Réseau. Citations = ordre de grandeur, appelées à dater.",
+ cols:["#","Chercheur","Affiliation","Domaine phare"],
+ rows:[
+ [1,"Reza Shokri ⭑","Google & NUS","Inférence d'appartenance, audit de privacy"],
+ [2,"Nicholas Carlini ⭑","Anthropic","Extraction, attaques adaptatives"],
+ [3,"Florian Tramèr ⭑","ETH Zürich","Attaques adaptatives, sécurité des agents"],
+ [4,"Carmela Troncoso ⭑","EPFL & MPI-SP","Ingénierie de la vie privée, PETs"],
+ [5,"Dawn Song ⭑","UC Berkeley & Meta","Sécurité IA, DecodingTrust"],
+ [6,"Zico Kolter ⭑","CMU · board OpenAI","GCG, robustesse, gouvernance"],
+ [7,"Nicolas Papernot ⭑","U. Toronto & Vector","PATE, audits DP-SGD"],
+ [8,"Battista Biggio ⭑","U. Cagliari","Pionnier de l'adversarial ML"],
+ [9,"Aurélien Bellet ⭑","Inria","Fédéré privé, audits DP"],
+ [10,"Yang Zhang ⭑","CISPA","Attaques d'inférence à l'échelle"],
+ [11,"Sahar Abdelnabi ⭑","MPI-IS & ELLIS","Injection indirecte, pare-feu d'agents"],
+ [12,"Bo Li ⭑","UIUC & Virtue AI","Évaluation de confiance, garde-fous"],
+ [13,"Vitaly Shmatikov ⭑","Cornell Tech","MIA, sécurité du ML, RAG"],
+ [14,"Prateek Mittal ⭑","Princeton","Robustesse × privacy"],
+ [15,"Kamalika Chaudhuri ⭑","Google DeepMind & UCSD","Théorie de la DP"],
+ [16,"Somesh Jha","U. Wisconsin","Sécurité du ML, robustesse certifiée"],
+ [17,"Dan Boneh","Stanford","Cryptographie, sécurité appliquée"],
+ [18,"Nicolas Flammarion","EPFL","Robustesse, jailbreaks"],
+ [19,"Maksym Andriushchenko ⭑","ELLIS Tübingen","Jailbreaks adaptatifs, AgentHarm"],
+ [20,"Neil Zhenqiang Gong ⭑","Duke","Formalisation de l'injection, DataSentinel"],
+ [21,"David Wagner ⭑","UC Berkeley","Défenses structurelles anti-injection"],
+ [22,"Chaowei Xiao ⭑","NVIDIA & JHU","AutoDAN, injection automatique"],
+ [23,"Eric Wong","U. Pennsylvania","PAIR, robustesse certifiée"],
+ [24,"Hamed Hassani","U. Pennsylvania","PAIR, jailbreaks black-box"],
+ [25,"George Pappas","U. Pennsylvania","SmoothLLM, robustesse"],
+ [26,"Milad Nasr ⭑","OpenAI","Extraction, attaques privacy"],
+ [27,"Niloofar Mireshghallah ⭑","CMU","Intégrité contextuelle, privacy LLM"],
+ [28,"Daphne Ippolito ⭑","CMU","Mémorisation, données d'entraînement"],
+ [29,"Katherine Lee ⭑","Google DeepMind","Mémorisation, copyright (GenLaw)"],
+ [30,"Eugene Bagdasarian ⭑","UMass & Google","Intégrité contextuelle, agents"],
+ [31,"Mario Fritz ⭑","CISPA","Injection indirecte, multi-agents"],
+ [32,"Jonas Geiping ⭑","ELLIS Tübingen","Attaques par optimisation"],
+ [33,"Andy Zou ⭑","CMU & Gray Swan","GCG, circuit breakers"],
+ [34,"Matt Fredrikson ⭑","Gray Swan & CMU","GCG, inversion de modèles"],
+ [35,"Dan Hendrycks ⭑","Center for AI Safety","HarmBench, benchmarks safety"],
+ [36,"Ben Zhao ⭑","UChicago","Glaze / Nightshade"],
+ [37,"Bo Han","Hong Kong Baptist U.","Robustesse, apprentissage fiable"],
+ [38,"Pin-Yu Chen ⭑","IBM Research","Robustesse adversariale, ART"],
+ [39,"Amir Houmansadr ⭑","UMass Amherst","Privacy du fédéré"],
+ [40,"Ninghui Li","Perplexity & Purdue","MIA, DP, chair CCS"],
+ [41,"Kai Chen","CAS (Chine)","Sécurité des LLM, jailbreaks"],
+ [42,"Yang Liu","NTU Singapour","Testing & sécurité des LLM"],
+ [43,"Xinyun Chen","Google DeepMind","Robustesse, agents"],
+ [44,"Nils Lukas","MBZUAI","Filigranes, extraction"],
+ [45,"Javier Rando ⭑","ETH & Anthropic","Backdoors RLHF, jailbreaks"],
+ [46,"Edoardo Debenedetti ⭑","ETH Zürich","AgentDojo, CaMeL"],
+ [47,"Daniel Kang ⭑","UIUC","Agents exploitant des CVE"],
+ [48,"Pablo Piantanida ⭑","CentraleSupélec & ILLS","Limites fondamentales des MIA"],
+ [49,"Catuscia Palamidessi ⭑","Inria & LIX","Confidentialité formelle (d-privacy)"],
+ [50,"Jean-Pierre Hubaux ⭑","EPFL","HE vérifiable, MPC santé"]
+]},
+pap:{ title:"Recherches fondatrices à connaître",
+ intro:"Le socle théorique et empirique. Ordre chrono-thématique, pas par citations. Ces travaux définissent le vocabulaire et les méthodes — les lire, c'est comprendre pourquoi telle défense tient ou casse.",
+ note:"Sélection du radar (≈36 jalons). 📌 = présent dans le corpus Scholar fourni. Une liste vivante — chaque cycle en ajoute.",
+ cols:["Année","Travail","Auteurs (abrégé)","Pourquoi ça compte"],
+ rows:[
+ ["2011","Differential Privacy (livre de référence)","Dwork & Roth","Le cadre mathématique de la vie privée"],
+ ["2013","Evasion attacks against ML","Biggio et al.","L'adversarial ML avant l'heure"],
+ ["2014","Intriguing properties of neural networks","Szegedy et al.","Découverte des exemples adversariaux"],
+ ["2015","Explaining & Harnessing Adversarial Examples","Goodfellow et al.","FGSM, base de l'attaque"],
+ ["2016","Deep Learning with Differential Privacy (DP-SGD)","Abadi et al.","Rend l'entraînement privé praticable"],
+ ["2017","Membership Inference Attacks 📌","Shokri, Shmatikov et al.","Acte fondateur des attaques de privacy ML"],
+ ["2017","Towards Evaluating the Robustness (C&W)","Carlini & Wagner","La façon rigoureuse d'attaquer une défense"],
+ ["2017","PATE","Papernot et al.","Apprentissage privé par agrégation d'enseignants"],
+ ["2018","Comprehensive Privacy Analysis (white-box) 📌","Nasr, Shokri, Houmansadr","MIA white-box centralisé & fédéré"],
+ ["2019","Deep Leakage from Gradients","Zhu et al.","Les gradients fuient les données"],
+ ["2020","Extracting Training Data from LLMs","Carlini et al.","Les LLM régurgitent leur corpus"],
+ ["2021","Advances & Open Problems in Federated Learning 📌","Kairouz, Bellet et al.","La bible du fédéré (référence commune)"],
+ ["2021","Membership Inference: Enhanced (LiRA)","Carlini et al.","Le MIA moderne, calibré"],
+ ["2022","What Does it Mean for a LM to Preserve Privacy? 📌","Brown, Mireshghallah, Shokri, Tramèr","Repense la privacy à l'ère LLM"],
+ ["2022","Quantifying Memorization across LMs","Carlini et al.","Loi d'échelle de la mémorisation"],
+ ["2022","Truth Serum 📌","Tramèr, Shokri, Carlini et al.","Empoisonner pour extraire des secrets"],
+ ["2023","Universal & Transferable Attacks (GCG)","Zou, Kolter, Fredrikson et al.","Jailbreak par optimisation, transférable"],
+ ["2023","Not what you've signed up for (injection indirecte)","Greshake, Abdelnabi, Fritz et al.","Définit l'injection indirecte"],
+ ["2023","Poisoning Web-Scale Datasets is Practical","Carlini et al.","Empoisonner un corpus web réel"],
+ ["2023","Representation Engineering","Zou et al.","Lire/piloter les représentations internes"],
+ ["2024","Scalable Extraction (aligned production models)","Nasr, Carlini et al.","Extraction sur ChatGPT"],
+ ["2024","Can LLMs Keep a Secret? (intégrité contextuelle) 📌","Mireshghallah, Shokri et al.","La fuite se joue dans le contexte"],
+ ["2024","AutoDAN","Liu, Xiao et al.","Jailbreaks furtifs automatiques"],
+ ["2024","The Instruction Hierarchy","Wallace et al.","Réponse structurelle d'OpenAI à l'injection"],
+ ["2024","Improving Alignment & Robustness with Circuit Breakers","Zou et al.","Défense par short-circuit des représentations"],
+ ["2024","Stealing Part of a Production LM","Carlini, Tramèr et al.","Extraction partielle de poids via API"],
+ ["2024","Jailbreaking Black-Box LLMs in 20 Queries (PAIR)","Chao, Wong, Pappas et al.","Jailbreak efficace en boîte noire"],
+ ["2024","AgentDojo","Debenedetti, Tramèr et al.","Le banc d'essai des attaques d'agents"],
+ ["2024","Low-Cost High-Power MIA (RMIA) 📌","Zarifzadeh, Shokri","Le MIA faible-coût / forte-puissance"],
+ ["2024","SynthID-Text (filigrane) — Nature","Dathathri et al. (DeepMind)","Filigrane déployé à grande échelle"],
+ ["2025","Defeating Prompt Injections by Design (CaMeL)","Debenedetti, Tramèr et al.","Séparer contrôle et données par conception"],
+ ["2025","The Canary's Echo (synthétique) 📌","Meeus, Shokri et al.","Le synthétique fait écho aux canaris"],
+ ["2025","Design Patterns for Securing LLM Agents","Beurer-Kellner, Debenedetti, Tramèr et al.","Catalogue des patterns défensifs d'agents"],
+ ["2026","Firewalls to Secure Dynamic LLM Agentic Networks 📌","Abdelnabi, Bagdasarian, Shokri et al.","Pare-feu pour réseaux d'agents"],
+ ["2026","The Distillation Game 📌","Allouah, Shokri et al.","Attaques/défenses de distillation"],
+ ["2026","Adaptive Attacks Break Injection Defenses","Zhan, Kang et al.","Casse adaptativement les défenses anti-injection"]
+]},
+oss:{ title:"Outils open source à explorer",
+ intro:"Regroupés par usage : red teaming & scan, garde-fous runtime, confidentialité (DP/FHE/fédéré), provenance, et audit. Priorité aux projets réellement maintenus et adoptés.",
+ note:"Sélection du radar (≈40 outils). Vérifier la licence et l'activité du dépôt avant adoption — un scan peut lui-même devenir surface d'attaque.",
+ cols:["#","Outil","Catégorie","À quoi il sert"],
+ rows:[
+ [1,"garak (NVIDIA)","Red team / scan","Scanner de vulnérabilités LLM de référence"],
+ [2,"PyRIT (Microsoft)","Red team","Automatisation du red teaming GenAI"],
+ [3,"promptfoo","Éval / red team","Tests, évals et red teaming en CI"],
+ [4,"Giskard","Test / scan","Détection de vulnérabilités et biais LLM"],
+ [5,"HarmBench","Benchmark","Cadre standard de red teaming automatisé"],
+ [6,"AgentDojo","Benchmark agents","Attaques/défenses d'agents sous outils"],
+ [7,"Inspect (UK AISI)","Éval","Framework d'évaluations de modèles"],
+ [8,"Llama Guard / Purple Llama","Garde-fou","Classifieurs d'entrée/sortie (Meta)"],
+ [9,"Granite Guardian (IBM)","Garde-fou","Détection de risques entrée/sortie"],
+ [10,"NeMo Guardrails (NVIDIA)","Garde-fou","Rails programmables de conversation"],
+ [11,"Guardrails AI","Garde-fou","Validation structurée des sorties"],
+ [12,"LLM Guard (Protect AI)","Garde-fou","Filtres prompts/réponses"],
+ [13,"Rebuff","Garde-fou","Détection d'injection multi-couches"],
+ [14,"OpenDP","Confidentialité (DP)","Bibliothèque DP de référence (Harvard)"],
+ [15,"Opacus (Meta)","Confidentialité (DP)","DP-SGD pour PyTorch"],
+ [16,"TensorFlow Privacy","Confidentialité (DP)","DP pour TensorFlow"],
+ [17,"ML Privacy Meter (Shokri)","Audit privacy","Quantifie le risque par MIA 📌"],
+ [18,"Google DP Library","Confidentialité (DP)","Primitives DP en C++/Go/Java"],
+ [19,"Flower","Fédéré","Framework fédéré agnostique"],
+ [20,"declearn (Inria)","Fédéré","Fédéré modulaire multi-frameworks 📌"],
+ [21,"FLamby (Inria/Owkin)","Fédéré (bench)","Benchmark fédéré cross-silo santé 📌"],
+ [22,"Concrete ML (Zama)","FHE","ML sur données chiffrées (TFHE)"],
+ [23,"OpenFHE","FHE","Bibliothèque FHE multi-schémas"],
+ [24,"Microsoft SEAL","FHE","Bibliothèque FHE (BFV/CKKS)"],
+ [25,"Lattigo","FHE / MPC","FHE & MHE en Go"],
+ [26,"TenSEAL","FHE","FHE pour tenseurs (surcouche SEAL)"],
+ [27,"MP-SPDZ","MPC","Boîte à outils MPC de référence"],
+ [28,"CrypTen (Meta)","MPC","MPC pour PyTorch"],
+ [29,"ezkl","zkML","Preuves ZK d'inférence de modèles"],
+ [30,"Adversarial Robustness Toolbox (IBM)","Robustesse","Attaques & défenses adversariales"],
+ [31,"CleverHans","Robustesse","Benchmark d'attaques (historique)"],
+ [32,"Foolbox","Robustesse","Attaques adversariales rapides"],
+ [33,"AutoAttack","Robustesse","Évaluation standard de robustesse"],
+ [34,"SynthID (DeepMind)","Provenance","Filigrane de texte/image"],
+ [35,"C2PA / Content Credentials","Provenance","Standard de provenance signée"],
+ [36,"modelscan (Protect AI)","Chaîne d'appro.","Scan de modèles malveillants"],
+ [37,"picklescan","Chaîne d'appro.","Détecte le pickle dangereux"],
+ [38,"safetensors (HF)","Chaîne d'appro.","Format de poids sûr (sans exécution)"],
+ [39,"mcp-scan (Invariant)","Sécurité MCP","Scan de serveurs/outils MCP"],
+ [40,"Glaze / Nightshade","Protection données","Empoisonnement protecteur pour créateurs"]
+]},
+jou:{ title:"Revues où publier (ciblage)",
+ intro:"Pour la sécurité/privacy des LLM, les conférences priment sur les revues (voir onglet suivant). Mais pour un travail étendu, une synthèse ou un public interdisciplinaire, ces revues comptent. Quartile SJR indicatif.",
+ note:"Quartile = SJR (Scimago), ordre de grandeur. « APC » = frais de publication en open access. Vérifier scope et délais avant soumission.",
+ cols:["#","Revue","Éditeur","Quartile","Note de ciblage"],
+ rows:[
+ [1,"IEEE Transactions on Information Forensics & Security (TIFS)","IEEE","Q1","La revue phare sécurité ; solide pour privacy ML"],
+ [2,"ACM Transactions on Privacy and Security (TOPS)","ACM","Q1","Sécurité & privacy, format long"],
+ [3,"IEEE Transactions on Dependable & Secure Computing (TDSC)","IEEE","Q1","Systèmes fiables et sécurisés"],
+ [4,"Journal of Machine Learning Research (JMLR)","MLR","Q1","Contributions ML fondamentales (DP, robustesse)"],
+ [5,"IEEE T-PAMI","IEEE","Q1","ML/vision haut de gamme, robustesse"],
+ [6,"Proceedings on Privacy Enhancing Technologies (PoPETs)","Sciendo","Q1","Le cœur PETs ; hybride revue/conf (PETS)"],
+ [7,"Nature Machine Intelligence","Nature","Q1","Impact large, safety & société"],
+ [8,"Transactions on Machine Learning Research (TMLR)","MLR","—","Rapide, sans course à la nouveauté (héberge Firewalls 📌)"],
+ [9,"IEEE Security & Privacy (magazine)","IEEE","Q1","Articles de synthèse accessibles 📌"],
+ [10,"Computers & Security","Elsevier","Q1","Sécurité appliquée, large audience"],
+ [11,"Journal of Cybersecurity","Oxford","Q1","Interdisciplinaire (héberge Bugs in our Pockets 📌)"],
+ [12,"ACM Computing Surveys","ACM","Q1","LA revue pour une survey de référence"],
+ [13,"IEEE Transactions on Neural Networks & Learning Systems","IEEE","Q1","ML, robustesse, apprentissage fiable"],
+ [14,"IEEE Access","IEEE","Q2","Rapide, large scope, APC — bon pour visibilité"],
+ [15,"IEEE Internet of Things Journal","IEEE","Q1","Sécurité IA embarquée / IoT"],
+ [16,"ACM Transactions on Intelligent Systems & Technology","ACM","Q1","IA appliquée & fiable"],
+ [17,"Artificial Intelligence (AIJ)","Elsevier","Q1","IA fondamentale, cadre théorique"],
+ [18,"Machine Learning (Springer)","Springer","Q2","ML avec preuves (héberge des travaux fédérés)"],
+ [19,"IEEE Transactions on Knowledge & Data Engineering","IEEE","Q1","Données, RAG, sécurité des systèmes"],
+ [20,"Digital Threats: Research and Practice (ACM)","ACM","Q2","Menaces & pratique, orienté praticien"]
+]},
+conf:{ title:"Conférences dans le monde — avec classement",
+ intro:"Rang CORE 2023 quand il existe (A* = élite mondiale, A = excellente). Les workshops (SaTML, AISec, SafeGenAI…) n'ont pas de rang CORE mais sont souvent le lieu le plus vivant pour la sécurité LLM naissante — signalés « WS ».",
+ note:"Rang = portail CORE (core.edu.au) 2023, référence académique standard. « Sécurité LLM » indique où le sujet est le plus présent aujourd'hui.",
+ cols:["#","Conférence","Rang CORE","Zone","Pertinence sécurité LLM"],
+ rows:[
+ [1,"IEEE S&P (Oakland)","A*","Sécurité","★★★ le sommet sécurité, forte présence ML"],
+ [2,"USENIX Security","A*","Sécurité","★★★ attaques/défenses LLM, très appliqué"],
+ [3,"ACM CCS","A*","Sécurité","★★★ privacy ML, empoisonnement, MIA"],
+ [4,"NDSS","A*","Sécurité","★★★ systèmes, injection, agents"],
+ [5,"NeurIPS","A*","ML","★★★ safety, DP, robustesse, datasets"],
+ [6,"ICML","A*","ML","★★★ DP, attaques, alignement"],
+ [7,"ICLR","A*","ML","★★★ jailbreaks, MIA, agents"],
+ [8,"AAAI","A*","IA","★★ sécurité & éthique de l'IA"],
+ [9,"ACL","A*","NLP","★★ sécurité & privacy des LLM (NLP)"],
+ [10,"EMNLP","A*","NLP","★★ privacy LLM, red teaming (héberge MIA contextuelles 📌)"],
+ [11,"CVPR","A*","Vision","★ adversarial multimodal, VLM"],
+ [12,"IJCAI","A*","IA","★★ sécurité, confiance"],
+ [13,"KDD","A*","Données","★ privacy, graphes, robustesse"],
+ [14,"WWW (The Web Conf)","A*","Web","★★ sécurité web × agents, RAG"],
+ [15,"EuroS&P","A","Sécurité","★★ pendant européen d'Oakland"],
+ [16,"ESORICS","A","Sécurité","★★ sécurité européenne, privacy ML"],
+ [17,"ACSAC","A","Sécurité","★★ sécurité appliquée"],
+ [18,"AISTATS","A","ML/stats","★★ DP, théorie de la privacy"],
+ [19,"NAACL","A","NLP","★ sécurité & privacy NLP"],
+ [20,"AsiaCCS","A","Sécurité","★★ sécurité, forte croissance IA"],
+ [21,"RAID","A","Sécurité","★ intrusions, détection"],
+ [22,"PETS / PoPETs","A","Privacy","★★★ le rendez-vous PETs"],
+ [23,"WPES (workshop CCS)","WS","Privacy","★★ privacy dans la société électronique 📌"],
+ [24,"SaTML (IEEE)","WS","Sécurité ML","★★★ dédié sécurité & fiabilité du ML"],
+ [25,"AISec (workshop CCS)","WS","Sécurité ML","★★★ l'atelier historique sécurité×IA"],
+ [26,"DLS (Deep Learning & Security, S&P)","WS","Sécurité ML","★★ atelier attaques/défenses"],
+ [27,"SafeGenAI / red teaming (NeurIPS)","WS","Safety","★★★ ateliers safety à fort trafic"],
+ [28,"ICLR Secure & Trustworthy LLMs","WS","Safety LLM","★★★ dédié LLM de confiance"],
+ [29,"COLM","—","LLM","★★ nouvelle conf. dédiée aux LLM"],
+ [30,"FAccT (ACM)","A","IA & société","★ équité, minimisation, gouvernance 📌"],
+ [31,"Real World Crypto","—","Crypto","★★ crypto appliquée (FHE, MPC)"],
+ [32,"CRYPTO / EUROCRYPT","A*","Crypto","★★ fondations FHE/MPC/ZK"],
+ [33,"DEF CON AI Village","—","Communauté","★★★ red teaming public à grande échelle"],
+ [34,"Black Hat / RSA","—","Industrie","★★ où la sécurité LLM rencontre les RSSI"]
+]}
+};
+/* ================= moteur ================= */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const FAM={priv:{c:"#3987e5",l:"Confidentialité & données"},mod:{c:"#d95926",l:"Modèles & agents"},pets:{c:"#199e70",l:"Crypto & PETs"},inst:{c:"#98a2b3",l:"Gouvernance & structures"}};
+const TYPE={aca:"Académique",ind:"Industrie",indep:"Indépendant",inst:"Institution / projet"};
+const SRC={corpus:{l:"corpus",cls:"corp",title:"Issu des profils Scholar fournis"},ver:{l:"vérifié 08/26",cls:"",title:"Affiliation confirmée par recherche web ce mois-ci"},"":{l:"base",cls:"",title:"Base de connaissances — à re-vérifier au prochain cycle"}};
+const P=DATA.people, S=DATA.structures;
+const ALL=[...P.map(p=>({...p,kind:"p"})),...S.map(s=>({...s,kind:"s",t:"inst",f:"inst",tier:2,src:s.src||""}))];
+const byId=Object.fromEntries(ALL.map(n=>[n.id,n]));
+const adj={}; DATA.edges.forEach(([a,b])=>{(adj[a]=adj[a]||new Set()).add(b);(adj[b]=adj[b]||new Set()).add(a);});
+
+/* ---- stats ---- */
+(function(){
+  const pays=new Set(ALL.map(n=>n.cc).filter(c=>c&&c!=="Monde"));
+  const tiles=[[P.length,"Personnes suivies"],[S.length,"Structures & projets"],[DATA.edges.length,"Liens documentés"],[pays.size,"Pays"]];
+  $("#statrow").innerHTML=tiles.map(t=>`<div class="stat"><div class="v">${t[0]}</div><div class="l">${t[1]}</div></div>`).join("")+
+    `<div class="stat next"><div class="v">${DATA.meta.next.replace(" 2026","")}</div><div class="l">Prochaine veille</div></div>`;
+  $("#chip-counts").innerHTML=`<b>${P.length}</b> personnes · <b>${S.length}</b> structures`;
+  $("#glegend").innerHTML=Object.entries(FAM).map(([k,f])=>`<span><span class="sw" style="background:${f.c}"></span>${f.l}</span>`).join("")+
+    `<span><span class="dm"></span>structure / projet</span><span class="cap">taille = pilier · liens = co-publications</span>`;
+})();
+
+/* ---- fiches + filtres ---- */
+const state={fam:"all",type:"all",fr:false,q:""};
+function cardHTML(n){
+  const dot=n.kind==="s"?`<span class="dot diamond"></span>`:`<span class="dot" style="background:${FAM[n.f].c}"></span>`;
+  const src=SRC[n.src||""];
+  return `<article class="pcard" id="card-${n.id}" data-fam="${n.f}" data-type="${n.t}">
+    <div class="hd">${dot}<span class="nm">${esc(n.n)}</span><span class="fl" title="${esc(n.cc||"")}">${n.fl||""}</span></div>
+    <div class="role">${esc(n.role||"")}${n.role?" · ":""}<b>${esc(n.org)}</b></div>
+    <div class="ths">${(n.th||[]).map(t=>`<span class="th">${esc(t)}</span>`).join("")}</div>
+    <p class="note">${esc(n.note||"")}</p>
+    <div class="ft">
+      ${n.tier===1?`<span class="badge pilier">Pilier</span>`:""}
+      <span class="badge src" title="${esc(src.title)}">${src.l}</span>
+      <span class="badge">${TYPE[n.t]||""}</span>
+      ${n.link?`<a href="${esc(n.link)}" target="_blank" rel="noopener">site ↗</a>`:""}
+    </div></article>`;
+}
+function match(n){
+  if(state.fam!=="all"&&n.f!==state.fam)return false;
+  if(state.type!=="all"&&n.t!==state.type)return false;
+  if(state.fr&&n.cc!=="France")return false;
+  if(state.q){const h=(n.n+" "+n.org+" "+(n.role||"")+" "+(n.th||[]).join(" ")+" "+(n.note||"")+" "+(n.cc||"")).toLowerCase();
+    if(!h.includes(state.q))return false;}
+  return true;
+}
+function renderCards(){
+  const vis=ALL.filter(match);
+  const order={1:0,2:1}; vis.sort((a,b)=>(a.kind==="s")-(b.kind==="s")||order[a.tier]-order[b.tier]||a.n.localeCompare(b.n,"fr"));
+  $("#cards").innerHTML=vis.map(cardHTML).join("")||`<p style="color:var(--mute)">Aucun profil ne correspond — élargir les filtres.</p>`;
+  $("#fcount").textContent=`${vis.filter(v=>v.kind==="p").length} personnes · ${vis.filter(v=>v.kind==="s").length} structures`;
+  paintGraphFilter();
+}
+$$(".chip[data-fam]").forEach(ch=>ch.addEventListener("click",()=>{
+  state.fam=ch.dataset.fam;
+  $$(".chip[data-fam]").forEach(c=>c.setAttribute("aria-pressed",c===ch?"true":"false"));
+  renderCards();
+}));
+$("#ftype").addEventListener("change",e=>{state.type=e.target.value;renderCards();});
+$("#ffr").addEventListener("click",()=>{state.fr=!state.fr;$("#ffr").setAttribute("aria-pressed",state.fr);renderCards();});
+$("#q").addEventListener("input",e=>{state.q=e.target.value.trim().toLowerCase();renderCards();});
+
+/* ---- graphe (simulation maison, zéro dépendance) ---- */
+function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const G={nodes:ALL.map(n=>({...n})),vb:null,base:null};
+function layout(){
+  const svg=$("#graph"), W=svg.clientWidth||1100, H=620;
+  const rnd=mulberry(42);
+  const C={priv:[.27*W,.40*H],mod:[.70*W,.33*H],pets:[.34*W,.82*H],inst:[.74*W,.80*H]};
+  G.nodes.forEach(n=>{const c=C[n.f];n.x=c[0]+(rnd()-.5)*220;n.y=c[1]+(rnd()-.5)*160;n.vx=0;n.vy=0;});
+  const idx=Object.fromEntries(G.nodes.map((n,i)=>[n.id,i]));
+  const E=DATA.edges.map(([a,b])=>[idx[a],idx[b]]).filter(e=>e[0]!=null&&e[1]!=null);
+  for(let it=0;it<360;it++){
+    const T=1-it/360;
+    for(let i=0;i<G.nodes.length;i++){const a=G.nodes[i];
+      for(let j=i+1;j<G.nodes.length;j++){const b=G.nodes[j];
+        let dx=a.x-b.x,dy=a.y-b.y,d2=dx*dx+dy*dy||1;if(d2<62000){const f=3400/d2;dx*=f;dy*=f;a.vx+=dx;a.vy+=dy;b.vx-=dx;b.vy-=dy;}}}
+    E.forEach(([i,j])=>{const a=G.nodes[i],b=G.nodes[j];let dx=b.x-a.x,dy=b.y-a.y;const d=Math.sqrt(dx*dx+dy*dy)||1,f=.055*(d-102)/d;
+      a.vx+=dx*f;a.vy+=dy*f;b.vx-=dx*f;b.vy-=dy*f;});
+    G.nodes.forEach(n=>{const c=C[n.f];
+      n.vx+=(c[0]-n.x)*.022+(W/2-n.x)*.005;n.vy+=(c[1]-n.y)*.022+(H/2-n.y)*.005;
+      n.x+=n.vx*.09*T+n.vx*.02;n.y+=n.vy*.09*T+n.vy*.02;n.vx*=.5;n.vy*=.5;
+      n.x=Math.max(46,Math.min(W-46,n.x));n.y=Math.max(34,Math.min(H-40,n.y));});
+  }
+  G.base=[0,0,W,H];G.vb=[...G.base];
+  drawGraph();
+}
+function nodeR(n){return n.tier===1?9:(n.kind==="s"?7:6.5)}
+function drawGraph(){
+  const svg=$("#graph");
+  const eH=DATA.edges.map(([a,b])=>{const A=byId[a]?G.nodes.find(n=>n.id===a):null,B=G.nodes.find(n=>n.id===b);
+    if(!A||!B)return "";return `<line class="gedge" data-a="${a}" data-b="${b}" x1="${A.x.toFixed(1)}" y1="${A.y.toFixed(1)}" x2="${B.x.toFixed(1)}" y2="${B.y.toFixed(1)}"></line>`;}).join("");
+  const nH=G.nodes.map(n=>{
+    const r=nodeR(n), lab=n.kind==="s"?n.n.split(" —")[0].split(" (")[0]:n.n.split(" ").slice(-1)[0];
+    const shape=n.kind==="s"
+      ?`<rect x="${-r}" y="${-r}" width="${2*r}" height="${2*r}" transform="rotate(45)" fill="#1b222c" stroke="#98a2b3" stroke-width="1.6" rx="1.5"></rect>`
+      :`<circle r="${r}" fill="${FAM[n.f].c}" stroke="#0e1116" stroke-width="1.6"></circle>`;
+    return `<g class="gnode" data-id="${n.id}" transform="translate(${n.x.toFixed(1)},${n.y.toFixed(1)})" tabindex="0" role="button" aria-label="${esc(n.n)}">${shape}
+      <text y="${r+11}" text-anchor="middle" ${n.tier===1?'style="fill:#eef2f7;font-weight:600"':""}>${esc(lab)}</text></g>`;
+  }).join("");
+  svg.innerHTML=`<g id="gedges">${eH}</g><g id="gnodes">${nH}</g>`;
+  applyVB();
+  $$("#gnodes .gnode").forEach(g=>{
+    g.addEventListener("pointerenter",e=>hover(g.dataset.id,e));
+    g.addEventListener("pointermove",e=>moveTip(e));
+    g.addEventListener("pointerleave",()=>hover(null));
+    g.addEventListener("click",()=>gotoCard(g.dataset.id));
+    g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();gotoCard(g.dataset.id);}});
+  });
+  paintGraphFilter();
+}
+let tip=null;
+function hover(id,e){
+  const on=!!id, nb=on?(adj[id]||new Set()):null;
+  $$("#gnodes .gnode").forEach(g=>g.classList.toggle("dim",on&&g.dataset.id!==id&&!nb.has(g.dataset.id)));
+  $$("#gedges .gedge").forEach(l=>{const h=on&&(l.dataset.a===id||l.dataset.b===id);
+    l.classList.toggle("hl",h);l.classList.toggle("dim",on&&!h);});
+  if(!tip){tip=document.createElement("div");tip.id="gtip";$("#gwrap").appendChild(tip);}
+  if(on){const n=byId[id];
+    tip.innerHTML=`<div class="n">${esc(n.n)} ${n.fl||""}</div><div class="r">${esc(n.role||TYPE[n.t]||"")} · ${esc(n.org)}</div>
+      ${(n.th||[]).slice(0,3).map(t=>`<span class="th" style="margin:3px 3px 0 0;display:inline-block">${esc(t)}</span>`).join("")}
+      <div class="r" style="margin-top:5px">${nb.size?nb.size+" lien(s) · ":""}cliquer → fiche</div>`;
+    tip.hidden=false;if(e)moveTip(e);
+  } else if(tip){tip.hidden=true;}
+}
+function moveTip(e){if(!tip||tip.hidden)return;const r=$("#gwrap").getBoundingClientRect();
+  let x=e.clientX-r.left+14,y=e.clientY-r.top+10;
+  if(x>r.width-300)x-=320; if(y>r.height-120)y-=130;
+  tip.style.left=x+"px";tip.style.top=y+"px";}
+function gotoCard(id){
+  state.fam="all";state.type="all";state.fr=false;state.q="";
+  $("#q").value="";$("#ftype").value="all";$("#ffr").setAttribute("aria-pressed","false");
+  $$(".chip[data-fam]").forEach(c=>c.setAttribute("aria-pressed",c.dataset.fam==="all"?"true":"false"));
+  renderCards();
+  const el=$("#card-"+id);if(!el)return;
+  el.scrollIntoView({behavior:"smooth",block:"center"});
+  el.classList.add("flash");setTimeout(()=>el.classList.remove("flash"),1600);
+}
+function paintGraphFilter(){
+  $$("#gnodes .gnode").forEach(g=>{const n=byId[g.dataset.id];
+    g.style.opacity=match(n)?"":"0.14";});
+}
+/* zoom / pan */
+function applyVB(){$("#graph").setAttribute("viewBox",G.vb.map(v=>v.toFixed(1)).join(" "));}
+function zoom(f,cx,cy){const[x,y,w,h]=G.vb;const nw=Math.max(G.base[2]/6,Math.min(G.base[2]*1.4,w*f));const nh=nw*h/w;
+  const px=cx!=null?cx:x+w/2, py=cy!=null?cy:y+h/2;
+  G.vb=[px-(px-x)*nw/w, py-(py-y)*nh/h, nw, nh];applyVB();}
+$("#gz-in").addEventListener("click",()=>zoom(1/1.35));
+$("#gz-out").addEventListener("click",()=>zoom(1.35));
+$("#gz-reset").addEventListener("click",()=>{G.vb=[...G.base];applyVB();});
+$("#graph").addEventListener("wheel",e=>{e.preventDefault();const r=$("#graph").getBoundingClientRect();
+  const cx=G.vb[0]+ (e.clientX-r.left)/r.width*G.vb[2], cy=G.vb[1]+(e.clientY-r.top)/r.height*G.vb[3];
+  zoom(e.deltaY>0?1.18:1/1.18,cx,cy);},{passive:false});
+(function(){let drag=null;const svg=$("#graph");
+  svg.addEventListener("pointerdown",e=>{if(e.target.closest(".gnode"))return;drag={x:e.clientX,y:e.clientY,vb:[...G.vb]};svg.classList.add("grabbing");svg.setPointerCapture(e.pointerId);});
+  svg.addEventListener("pointermove",e=>{if(!drag)return;const r=svg.getBoundingClientRect();
+    G.vb[0]=drag.vb[0]-(e.clientX-drag.x)*drag.vb[2]/r.width;
+    G.vb[1]=drag.vb[1]-(e.clientY-drag.y)*drag.vb[3]/r.height;applyVB();});
+  const up=e=>{drag=null;svg.classList.remove("grabbing");};
+  svg.addEventListener("pointerup",up);svg.addEventListener("pointercancel",up);
+})();
+let rsz;window.addEventListener("resize",()=>{clearTimeout(rsz);rsz=setTimeout(layout,220);});
+
+/* ---- sélecteur besoin → techno ---- */
+(function(){
+  const sel=$("#need");
+  sel.innerHTML=DATA.needs.map((n,i)=>`<option value="${n.id}">${esc(n.label)}</option>`).join("");
+  function show(id){const n=DATA.needs.find(x=>x.id===id)||DATA.needs[0];
+    $("#reco").innerHTML=`<h4>Stack recommandée</h4>
+      <div class="stack">${n.stack.map(s=>`<span class="th">${esc(s)}</span>`).join("")}</div>
+      <p>${esc(n.txt)}</p><p style="color:var(--mute);font-size:12.5px">⚠ ${esc(n.note)}</p>`;}
+  sel.addEventListener("change",e=>show(e.target.value));show(DATA.needs[0].id);
+})();
+
+/* ---- classements (onglet Tops) ---- */
+const topState={list:"cos", q:""};
+function fmtCell(v,listKey){
+  const s=String(v);
+  if(listKey==="conf"&&/^A\*$/.test(s))return `<span class="tag astar">A*</span>`;
+  if(listKey==="conf"&&/^A$/.test(s))return `<span class="tag a">A</span>`;
+  if(listKey==="conf"&&s==="WS")return `<span class="tag ws">WS</span>`;
+  if(/^★+$/.test(s.replace(/\s.*/,"")) )return `<span class="star">${s.match(/^★+/)[0]}</span>${esc(s.replace(/^★+/,""))}`;
+  return esc(s).replace(/★+/g,m=>`<span class="star">${m}</span>`).replace(/📌/g,'<span class="pin">📌</span>').replace(/⭑/g,'<span class="pin">⭑</span>');
+}
+function renderTop(){
+  const L=TOPS[topState.list];
+  $("#topintro").innerHTML=esc(L.intro);
+  $("#topnote").innerHTML=esc(L.note);
+  const q=topState.q;
+  let rows=L.rows;
+  if(q)rows=rows.filter(r=>r.join(" ").toLowerCase().includes(q));
+  const head=`<tr>${L.cols.map((c,i)=>`<th${i===0?' style="width:44px"':''}>${esc(c)}</th>`).join("")}</tr>`;
+  const body=rows.map(r=>`<tr>${r.map((cell,i)=>{
+    if(i===0)return `<td><span class="rk">${esc(String(cell))}</span></td>`;
+    return `<td>${fmtCell(cell,topState.list)}</td>`;
+  }).join("")}</tr>`).join("");
+  $("#toptbl").innerHTML=head+body;
+  $("#topcount").textContent=`${rows.length} entrée${rows.length>1?"s":""}`;
+}
+$$(".toptab").forEach(b=>b.addEventListener("click",()=>{
+  topState.list=b.dataset.top;
+  $$(".toptab").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));
+  renderTop();
+}));
+$("#qtop").addEventListener("input",e=>{topState.q=e.target.value.trim().toLowerCase();renderTop();});
+renderTop();
+
+/* ---- onglets ---- */
+const VIEWS=["reseau","modeles","donnees","agents","technos","tops","veille"];
+function setView(v){
+  $$(".tab").forEach(t=>t.setAttribute("aria-selected",t.dataset.v===v?"true":"false"));
+  VIEWS.forEach(id=>{$("#v-"+id).hidden=id!==v;});
+  try{localStorage.setItem("radar-tab",v);}catch(_){}
+  window.scrollTo({top:0});
+  if(v==="reseau")requestAnimationFrame(()=>{const w=$("#graph").clientWidth;
+    if(w&&(!G.base||Math.abs(w-G.base[2])>40))layout();});
+}
+$$(".tab").forEach(t=>t.addEventListener("click",()=>setView(t.dataset.v)));
+document.addEventListener("keydown",e=>{
+  if(e.target.matches("input,select,textarea"))return;
+  const i=parseInt(e.key,10);if(i>=1&&i<=7)setView(VIEWS[i-1]);
+});
+let v0="reseau";try{const s=localStorage.getItem("radar-tab");if(VIEWS.includes(s))v0=s;}catch(_){}
+setView(v0);
+renderCards();
+layout();
+
+</script>
+
+
+
+
+
+</body>
+</html>
